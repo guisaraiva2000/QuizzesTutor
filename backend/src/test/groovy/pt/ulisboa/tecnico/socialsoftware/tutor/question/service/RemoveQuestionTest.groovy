@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
 class RemoveQuestionTest extends SpockTest {
     def question
     def optionOK
+    def optionOK2
     def optionKO
     def teacher
 
@@ -60,6 +61,8 @@ class RemoveQuestionTest extends SpockTest {
         optionRepository.save(optionKO)
     }
 
+
+
     def "remove a question"() {
         when:
         questionService.removeQuestion(question.getId())
@@ -72,6 +75,68 @@ class RemoveQuestionTest extends SpockTest {
 
     def "remove a question used in a quiz"() {
         given: "a question with answers"
+        Quiz quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setTitle(QUIZ_TITLE)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
+        quiz.setAvailableDate(LOCAL_DATE_BEFORE)
+        quiz.setCourseExecution(externalCourseExecution)
+        quiz.setOneWay(true)
+        quizRepository.save(quiz)
+
+        QuizQuestion quizQuestion= new QuizQuestion()
+        quizQuestion.setQuiz(quiz)
+        quizQuestion.setQuestion(question)
+        quizQuestionRepository.save(quizQuestion)
+
+        when:
+        questionService.removeQuestion(question.getId())
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.QUESTION_IS_USED_IN_QUIZ
+    }
+
+    def "remove a question with multiple answers"() {
+        given:"a question with 2 answers"
+        questionService.removeQuestion(question.getId())
+        question.setNumberOfCorrect(1)
+        imageRepository.save(image)
+        questionRepository.save(question)
+        optionOK2 = new Option()
+        optionOK2.setContent(OPTION_1_CONTENT)
+        optionOK2.setCorrect(true)
+        optionOK2.setSequence(0)
+        optionOK2.setQuestionDetails(questionDetails)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionOK2)
+        optionRepository.save(optionKO)
+        when:
+        questionService.removeQuestion(question.getId())
+
+        then: "the question is removeQuestion"
+        questionRepository.count() == 0L
+        imageRepository.count() == 0L
+        optionRepository.count() == 0L
+    }
+
+
+    def "remove a question with 2 answers used in a quiz"() {
+        given: "a question with 2 answers with answers"
+
+        questionService.removeQuestion(question.getId())
+        question.setNumberOfCorrect(1)
+        imageRepository.save(image)
+        questionRepository.save(question)
+        optionOK2 = new Option()
+        optionOK2.setContent(OPTION_1_CONTENT)
+        optionOK2.setCorrect(true)
+        optionOK2.setSequence(0)
+        optionOK2.setQuestionDetails(questionDetails)
+        optionRepository.save(optionOK)
+        optionRepository.save(optionOK2)
+        optionRepository.save(optionKO)
+
         Quiz quiz = new Quiz()
         quiz.setKey(1)
         quiz.setTitle(QUIZ_TITLE)
