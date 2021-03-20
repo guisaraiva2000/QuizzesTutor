@@ -100,7 +100,22 @@ class RemoveQuestionTest extends SpockTest {
     def "remove a question with multiple answers"() {
         given:"a question with 2 answers"
         questionService.removeQuestion(question.getId())
-        question.setNumberOfCorrect(1)
+        def image = new Image()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        imageRepository.save(image)
+
+        question = new Question()
+        question.setKey(1)
+        question.setTitle(QUESTION_1_TITLE)
+        question.setContent(QUESTION_1_CONTENT)
+        question.setStatus(Question.Status.AVAILABLE)
+        question.setNumberOfAnswers(3)
+        question.setNumberOfCorrect(2)
+        question.setCourse(externalCourse)
+        question.setImage(image)
+        def questionDetails = new MultipleChoiceQuestion()
+        question.setQuestionDetails(questionDetails)
         imageRepository.save(image)
         questionRepository.save(question)
         optionOK2 = new Option()
@@ -108,9 +123,9 @@ class RemoveQuestionTest extends SpockTest {
         optionOK2.setCorrect(true)
         optionOK2.setSequence(0)
         optionOK2.setQuestionDetails(questionDetails)
-        optionRepository.save(optionOK)
+
         optionRepository.save(optionOK2)
-        optionRepository.save(optionKO)
+
         when:
         questionService.removeQuestion(question.getId())
 
@@ -125,7 +140,22 @@ class RemoveQuestionTest extends SpockTest {
         given: "a question with 2 answers with answers"
 
         questionService.removeQuestion(question.getId())
-        question.setNumberOfCorrect(1)
+        def image = new Image()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        imageRepository.save(image)
+
+        question = new Question()
+        question.setKey(1)
+        question.setTitle(QUESTION_1_TITLE)
+        question.setContent(QUESTION_1_CONTENT)
+        question.setStatus(Question.Status.AVAILABLE)
+        question.setNumberOfAnswers(3)
+        question.setNumberOfCorrect(2)
+        question.setCourse(externalCourse)
+        question.setImage(image)
+        def questionDetails = new MultipleChoiceQuestion()
+        question.setQuestionDetails(questionDetails)
         imageRepository.save(image)
         questionRepository.save(question)
         optionOK2 = new Option()
@@ -133,9 +163,8 @@ class RemoveQuestionTest extends SpockTest {
         optionOK2.setCorrect(true)
         optionOK2.setSequence(0)
         optionOK2.setQuestionDetails(questionDetails)
-        optionRepository.save(optionOK)
+
         optionRepository.save(optionOK2)
-        optionRepository.save(optionKO)
 
         Quiz quiz = new Quiz()
         quiz.setKey(1)
