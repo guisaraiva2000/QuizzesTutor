@@ -6,18 +6,32 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionDetails;
 
 
 public class OpenAnswerQuestionDto extends QuestionDetailsDto {
-    // TODO
+    private String correctAnswer;
 
     public OpenAnswerQuestionDto() {
-        // TODO
     }
 
     public OpenAnswerQuestionDto(OpenAnswerQuestion question) {
-        // TODO
+        this.correctAnswer = question.getCorrectAnswer();
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public void setCorrectAnswer(String correctAnswer) {
+        this.correctAnswer = correctAnswer;
+    }
+
+    @Override
+    public String toString() {
+        return "OpenAnswerQuestionDto{" +
+                "correctAnswer='" + correctAnswer + '\'' +
+                '}';
     }
 
     @Override
     public QuestionDetails getQuestionDetails(Question question) {
-        return null;
+        return new OpenAnswerQuestion(question, this);
     }
 }
