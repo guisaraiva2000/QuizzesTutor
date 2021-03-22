@@ -1,3 +1,5 @@
+package pt.ulisboa.tecnico.socialsoftware.tutor.impexp.service
+
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
@@ -10,7 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 @DataJpaTest
 class ImportExportOpenQuestionsTest extends SpockTest {
 
-    def questionId
+    Integer questionId
 
     def setup() {
         def questionDto = new QuestionDto()
@@ -20,14 +22,12 @@ class ImportExportOpenQuestionsTest extends SpockTest {
         questionDto.setStatus(Question.Status.AVAILABLE.name())
 
         def openAnswerQuestionDto = new OpenAnswerQuestionDto()
-
+        openAnswerQuestionDto.setCorrectAnswer(OPTION_1_CONTENT)
 
         def image = new ImageDto()
         image.setUrl(IMAGE_1_URL)
         image.setWidth(20)
         questionDto.setImage(image)
-
-        // TODO
 
         questionDto.setQuestionDetailsDto(openAnswerQuestionDto)
 
@@ -55,13 +55,16 @@ class ImportExportOpenQuestionsTest extends SpockTest {
         imageResult.getWidth() == 20
         imageResult.getUrl() == IMAGE_1_URL
 
-
         def openAnswerDetailsDto = (OpenAnswerQuestionDto) questionResult.getQuestionDetailsDto()
-        // TODO
+        openAnswerDetailsDto.getCorrectAnswer() == OPTION_1_CONTENT
     }
 
     def 'export to latex'() {
-        // TODO
+        when:
+        def questionsLatex = questionService.exportQuestionsToLatex()
+
+        then:
+        questionsLatex != null
     }
 
     @TestConfiguration
