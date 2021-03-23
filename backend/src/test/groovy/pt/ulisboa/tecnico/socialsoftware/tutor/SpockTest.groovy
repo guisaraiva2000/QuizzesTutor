@@ -119,6 +119,9 @@ class SpockTest extends Specification {
     public static final String OPTION_1_CONTENT = "Option 1 Content"
     public static final String OPTION_2_CONTENT = "Option 2 Content"
 
+    public static final String OPEN_QUESTION_1_ANSWER = "Correct Answer 1"
+    public static final String OPEN_QUESTION_2_ANSWER = "Correct Answer 2"
+
     public static final String ROLE_STUDENT = "ROLE_STUDENT"
     public static final String ROLE_TEACHER = "ROLE_TEACHER"
     public static final String ROLE_ADMIN = "ROLE_ADMIN"
