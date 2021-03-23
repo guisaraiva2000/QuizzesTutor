@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.Updator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
@@ -10,6 +11,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDt
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.regex.Pattern;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.OPEN_ANSWER_QUESTION)
@@ -40,6 +43,9 @@ public class OpenAnswerQuestion extends QuestionDetails {
     }
 
     public void setPattern(Pattern pattern) {
+        if (!pattern.matcher(correctAnswer).find()) {
+            throw new TutorException(PATTERN_NEEDS_TO_MATCH_ANSWER);
+        }
         this.pattern = pattern;
     }
 

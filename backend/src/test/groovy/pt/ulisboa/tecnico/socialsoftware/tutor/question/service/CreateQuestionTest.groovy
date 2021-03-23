@@ -312,30 +312,72 @@ class CreateQuestionTest extends SpockTest {
         questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
 
         when:
-        def result = questionService.createQuestion(externalCourse.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
-
     }
 
-    def "create an open answer question with 1 Java regex expression"() {
+    def "create an open answer question with a matching Java regex expression"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDto.getQuestionDetailsDto().setPattern(OPEN_QUESTION_1_EXPRESSION)
 
-        //TODO
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
 
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getQuestionDetailsDto().getPattern() == OPEN_QUESTION_1_EXPRESSION
+
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        repoQuestion.getPattern() == OPEN_QUESTION_1_EXPRESSION
     }
 
-    def "create an open answer question with 2 Java regex expression"() {
+    def "cannot create an open answer question when the pattern does not match the correct answer"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDto.getQuestionDetailsDto().setPattern(OPEN_QUESTION_1_MISMATCH_EXPRESSION)
 
-        //TODO
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
 
-    }
-
-    def "create an open answer question with invalid Java regex expression"() {
-
-        //TODO
-
+        then: "exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.PATTERN_NEEDS_TO_MATCH_ANSWER
     }
 
     @Unroll
