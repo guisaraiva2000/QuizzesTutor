@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeFillInQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.*
 import spock.lang.Unroll
@@ -244,6 +245,39 @@ class CreateQuestionTest extends SpockTest {
         exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
     }
 
+    def "create an open answer question with correct answer"() {
+
+        //TODO
+
+    }
+
+    def "cannot create an open answer question without a correct answer"() {
+
+        //TODO
+
+    }
+    def "cannot create an open answer question when the correct answer has only white spaces"() {
+
+        //TODO
+
+    }
+
+    def "create an open answer question with 1 Java regex expression"() {
+
+        //TODO
+
+    }
+
+    def "create an open answer question with 2 Java regex expression"() {
+
+        //TODO
+    }
+
+    def "create an open answer question with invalid Java regex expression"() {
+
+        //TODO
+
+    }
     @Unroll
     def "fail to create any question for invalid/non-existent course (#nonExistentId)"(Integer nonExistentId) {
         given: "any multiple choice question dto"
