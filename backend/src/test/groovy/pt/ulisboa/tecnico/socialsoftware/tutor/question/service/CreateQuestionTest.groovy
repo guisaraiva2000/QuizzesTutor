@@ -309,7 +309,7 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setContent(QUESTION_1_CONTENT)
         questionDto.setStatus(Question.Status.AVAILABLE.name())
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
+        questionDto.getQuestionDetailsDto().setCorrectAnswer('    ')
 
         when:
         def result = questionService.createQuestion(externalCourse.getId(), questionDto)
@@ -317,7 +317,6 @@ class CreateQuestionTest extends SpockTest {
         then: "exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
-
     }
 
     def "create an open answer question with 1 Java regex expression"() {
@@ -326,11 +325,6 @@ class CreateQuestionTest extends SpockTest {
 
     }
 
-    def "create an open answer question with 2 Java regex expression"() {
-
-        //TODO
-
-    }
 
     def "create an open answer question with invalid Java regex expression"() {
 

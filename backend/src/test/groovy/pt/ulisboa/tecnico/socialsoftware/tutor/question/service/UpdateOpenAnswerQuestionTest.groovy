@@ -80,7 +80,7 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
     def "update open answer question correct answer with missing data"() {
         given: 'a question'
         def questionDto = new QuestionDto(question)
-        question.getQuestionDetails().setCorrectAnswer('     ')
+        questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
 
         when:
         questionService.updateQuestion(question.getId(), questionDto)
