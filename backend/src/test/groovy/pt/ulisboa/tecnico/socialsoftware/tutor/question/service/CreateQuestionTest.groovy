@@ -246,19 +246,77 @@ class CreateQuestionTest extends SpockTest {
     }
 
     def "create an open answer question with correct answer"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
 
-        //TODO
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
 
     }
 
     def "cannot create an open answer question without a correct answer"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
 
-        //TODO
+        when:
+        def result = questionService.createQuestion(externalCourse.getId(), questionDto)
 
+        then: "exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
     }
-    def "cannot create an open answer question when the correct answer has only white spaces"() {
 
-        //TODO
+    def "cannot create an open answer question when the correct answer has only white spaces"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
+
+        when:
+        def result = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
 
     }
 
@@ -271,6 +329,7 @@ class CreateQuestionTest extends SpockTest {
     def "create an open answer question with 2 Java regex expression"() {
 
         //TODO
+
     }
 
     def "create an open answer question with invalid Java regex expression"() {
@@ -278,6 +337,7 @@ class CreateQuestionTest extends SpockTest {
         //TODO
 
     }
+
     @Unroll
     def "fail to create any question for invalid/non-existent course (#nonExistentId)"(Integer nonExistentId) {
         given: "any multiple choice question dto"
