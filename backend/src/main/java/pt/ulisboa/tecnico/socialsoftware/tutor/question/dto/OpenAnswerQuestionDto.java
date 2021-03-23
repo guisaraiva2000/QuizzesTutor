@@ -31,7 +31,7 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     @Override
     public String toString() {
         return "OpenAnswerQuestionDto{" +
-                "correctAnswer='" + correctAnswer + '\'' +
+                "correctAnswer='" + correctAnswer +
                 '}';
     }
 
