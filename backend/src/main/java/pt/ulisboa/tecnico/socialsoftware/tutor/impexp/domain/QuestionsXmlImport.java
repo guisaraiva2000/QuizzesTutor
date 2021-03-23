@@ -19,6 +19,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -107,6 +108,9 @@ public class QuestionsXmlImport {
             case Question.QuestionTypes.CODE_FILL_IN_QUESTION:
                 questionDetailsDto = importCodeFillInQuestion(questionElement);
                 break;
+            case Question.QuestionTypes.OPEN_ANSWER_QUESTION:
+                questionDetailsDto = importOpenAnswerQuestion(questionElement);
+                break;
             default:
                 throw new TutorException(QUESTION_TYPE_NOT_IMPLEMENTED, type);
         }
@@ -162,6 +166,14 @@ public class QuestionsXmlImport {
             spots.add(spot);
         }
         questionDto.setFillInSpots(spots);
+        return questionDto;
+    }
+
+    private QuestionDetailsDto importOpenAnswerQuestion(Element questionElement) {
+        OpenAnswerQuestionDto questionDto = new OpenAnswerQuestionDto();
+        questionDto.setCorrectAnswer(questionElement.getChildText("correctAnswer"));
+        var pattern = Pattern.compile(questionElement.getChild("correctAnswer").getAttributeValue("pattern"));
+        questionDto.setPattern(pattern);
         return questionDto;
     }
 

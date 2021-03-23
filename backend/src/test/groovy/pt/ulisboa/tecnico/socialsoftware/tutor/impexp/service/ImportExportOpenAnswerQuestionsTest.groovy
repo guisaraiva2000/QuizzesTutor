@@ -9,6 +9,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.ImageDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 
+import java.util.regex.Pattern
+
 @DataJpaTest
 class ImportExportOpenAnswerQuestionsTest extends SpockTest {
 
@@ -21,7 +23,8 @@ class ImportExportOpenAnswerQuestionsTest extends SpockTest {
         questionDto.setStatus(Question.Status.AVAILABLE.name())
 
         def openAnswerQuestionDto = new OpenAnswerQuestionDto()
-        openAnswerQuestionDto.setCorrectAnswer(OPTION_1_CONTENT)
+        openAnswerQuestionDto.setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        openAnswerQuestionDto.setPattern(OPEN_QUESTION_1_PATTERN)
 
         def image = new ImageDto()
         image.setUrl(IMAGE_1_URL)
@@ -55,7 +58,8 @@ class ImportExportOpenAnswerQuestionsTest extends SpockTest {
         imageResult.getUrl() == IMAGE_1_URL
 
         def openAnswerDetailsDto = (OpenAnswerQuestionDto) questionResult.getQuestionDetailsDto()
-        openAnswerDetailsDto.getCorrectAnswer() == OPTION_1_CONTENT
+        openAnswerDetailsDto.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        openAnswerDetailsDto.getPattern().toString() == OPEN_QUESTION_1_ANSWER
     }
 
     def 'export to latex'() {

@@ -45,6 +45,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.auth.repository.AuthUserRepositor
 import spock.lang.Specification
 
 import java.time.LocalDateTime
+import java.util.regex.Pattern
 
 
 class SpockTest extends Specification {
@@ -121,6 +122,10 @@ class SpockTest extends Specification {
 
     public static final String OPEN_QUESTION_1_ANSWER = "Correct Answer 1"
     public static final String OPEN_QUESTION_2_ANSWER = "Correct Answer 2"
+
+    public static final Pattern OPEN_QUESTION_1_PATTERN = Pattern.compile(OPEN_QUESTION_1_ANSWER)
+    public static final Pattern OPEN_QUESTION_2_PATTERN = Pattern.compile(OPEN_QUESTION_2_ANSWER)
+
 
     public static final String ROLE_STUDENT = "ROLE_STUDENT"
     public static final String ROLE_TEACHER = "ROLE_TEACHER"

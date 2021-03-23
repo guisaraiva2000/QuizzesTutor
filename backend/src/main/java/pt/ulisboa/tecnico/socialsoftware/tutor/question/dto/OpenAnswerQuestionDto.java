@@ -16,6 +16,7 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
 
     public OpenAnswerQuestionDto(OpenAnswerQuestion question) {
         this.correctAnswer = question.getCorrectAnswer();
+        this.pattern = question.getPattern();
     }
 
     public String getCorrectAnswer() {
