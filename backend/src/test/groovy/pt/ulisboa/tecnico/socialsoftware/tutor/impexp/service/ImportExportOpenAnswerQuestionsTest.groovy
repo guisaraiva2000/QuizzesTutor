@@ -10,13 +10,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDt
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 
 @DataJpaTest
-class ImportExportOpenQuestionsTest extends SpockTest {
+class ImportExportOpenAnswerQuestionsTest extends SpockTest {
 
     Integer questionId
 
     def setup() {
         def questionDto = new QuestionDto()
-
         questionDto.setTitle(QUESTION_1_TITLE)
         questionDto.setContent(QUESTION_1_CONTENT)
         questionDto.setStatus(Question.Status.AVAILABLE.name())
