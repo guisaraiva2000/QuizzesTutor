@@ -9,24 +9,38 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDt
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.regex.Pattern;
 
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.OPEN_ANSWER_QUESTION)
 public class OpenAnswerQuestion extends QuestionDetails {
 
     private String correctAnswer;
+    private Pattern pattern;
 
-    public OpenAnswerQuestion() {super();}
+    public OpenAnswerQuestion() {
+        super();
+    }
 
     public OpenAnswerQuestion(Question question, OpenAnswerQuestionDto openAnswerQuestionDto) {
         super(question);
         update(openAnswerQuestionDto);
     }
 
-    public String getCorrectAnswer() { return correctAnswer;}
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
 
     public void setCorrectAnswer(String correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(Pattern pattern) {
+        this.pattern = pattern;
     }
 
     @Override
@@ -54,10 +68,15 @@ public class OpenAnswerQuestion extends QuestionDetails {
         return new OpenAnswerQuestionDto(this);
     }
 
-    public void update(OpenAnswerQuestionDto questionDetails) {setCorrectAnswer(questionDetails.getCorrectAnswer());}
+    public void update(OpenAnswerQuestionDto questionDetails) {
+        setCorrectAnswer(questionDetails.getCorrectAnswer());
+        setPattern(questionDetails.getPattern());
+    }
 
     @Override
-    public void update(Updator updator) {updator.update(this);}
+    public void update(Updator updator) {
+        updator.update(this);
+    }
 
     @Override
     public String getCorrectAnswerRepresentation() {
@@ -65,5 +84,7 @@ public class OpenAnswerQuestion extends QuestionDetails {
     }
 
     @Override
-    public void accept(Visitor visitor) { visitor.visitQuestionDetails(this); }
+    public void accept(Visitor visitor) {
+        visitor.visitQuestionDetails(this);
+    }
 }

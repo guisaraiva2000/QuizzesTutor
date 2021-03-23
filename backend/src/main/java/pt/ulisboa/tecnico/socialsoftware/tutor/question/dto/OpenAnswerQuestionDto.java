@@ -4,9 +4,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestio
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionDetails;
 
+import java.util.regex.Pattern;
+
 
 public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     private String correctAnswer;
+    private Pattern pattern;
 
     public OpenAnswerQuestionDto() {
     }
@@ -23,6 +26,14 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
         this.correctAnswer = correctAnswer;
     }
 
+    public Pattern getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(Pattern pattern) {
+        this.pattern = pattern;
+    }
+
     @Override
     public void update(OpenAnswerQuestion question) {
         question.update(this);
@@ -31,7 +42,8 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     @Override
     public String toString() {
         return "OpenAnswerQuestionDto{" +
-                "correctAnswer='" + correctAnswer +
+                "correctAnswer='" + correctAnswer + '\'' +
+                ", pattern=" + pattern +
                 '}';
     }
 
