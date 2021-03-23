@@ -24,6 +24,11 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     }
 
     @Override
+    public void update(OpenAnswerQuestion question) {
+        question.update(this);
+    }
+
+    @Override
     public String toString() {
         return "OpenAnswerQuestionDto{" +
                 "correctAnswer='" + correctAnswer + '\'' +

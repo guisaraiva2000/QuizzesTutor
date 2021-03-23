@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.Updator;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.CodeFillInQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDto;
 
@@ -55,15 +54,16 @@ public class OpenAnswerQuestion extends QuestionDetails {
         return new OpenAnswerQuestionDto(this);
     }
 
+    public void update(OpenAnswerQuestionDto questionDetails) {setCorrectAnswer(questionDetails.getCorrectAnswer());}
+
     @Override
-    public void update(Updator updator) {}
+    public void update(Updator updator) {updator.update(this);}
 
     @Override
     public String getCorrectAnswerRepresentation() {
-        return null;
+        return correctAnswer;
     }
 
     @Override
-    public void accept(Visitor visitor) {
-    }
+    public void accept(Visitor visitor) { visitor.visitQuestionDetails(this); }
 }
