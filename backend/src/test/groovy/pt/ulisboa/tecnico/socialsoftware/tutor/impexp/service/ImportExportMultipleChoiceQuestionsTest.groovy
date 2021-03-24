@@ -151,6 +151,47 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         questionsLatex != null
     }
 
+    def 'export to latex with 2 right answers'() {
+        questionService.removeQuestion(questionId)
+
+        def questionDto = new QuestionDto()
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+
+        def image = new ImageDto()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        questionDto.setImage(image)
+
+        def optionDto = new OptionDto()
+        optionDto.setSequence(0)
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setSequence(1)
+        optionDto.setContent(OPTION_2_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setSequence(2)
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        questionId = questionService.createQuestion(externalCourse.getId(), questionDto).getId()
+        
+        when:
+        def questionsLatex = questionService.exportQuestionsToLatex()
+
+        then:
+        questionsLatex != null
+    }
+
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
