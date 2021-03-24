@@ -46,8 +46,9 @@ public class OpenAnswerQuestion extends QuestionDetails {
     }
 
     public void setExpression(Pattern expression) {
-        if (!expression.matcher(correctAnswer).find()) {
-            throw new TutorException(PATTERN_NEEDS_TO_MATCH_ANSWER);
+        if (correctAnswer == null || correctAnswer.trim().isEmpty()) { this.expression = expression; }
+        else if (!expression.matcher(correctAnswer).find()) {
+          throw new TutorException(PATTERN_NEEDS_TO_MATCH_ANSWER);
         }
         this.expression = expression;
     }
