@@ -294,7 +294,7 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
 
         when:
-        def result = questionService.createQuestion(externalCourse.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
