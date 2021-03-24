@@ -19,7 +19,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class OpenAnswerQuestion extends QuestionDetails {
 
     private String correctAnswer;
-    private Pattern pattern;
+    private Pattern expression;
 
     public OpenAnswerQuestion() {
         super();
@@ -41,15 +41,15 @@ public class OpenAnswerQuestion extends QuestionDetails {
         this.correctAnswer = correctAnswer;
     }
 
-    public Pattern getPattern() {
-        return pattern;
+    public Pattern getExpression() {
+        return expression;
     }
 
-    public void setPattern(Pattern pattern) {
-        if (!pattern.matcher(correctAnswer).find()) {
+    public void setExpression(Pattern expression) {
+        if (!expression.matcher(correctAnswer).find()) {
             throw new TutorException(PATTERN_NEEDS_TO_MATCH_ANSWER);
         }
-        this.pattern = pattern;
+        this.expression = expression;
     }
 
     @Override
@@ -79,7 +79,10 @@ public class OpenAnswerQuestion extends QuestionDetails {
 
     public void update(OpenAnswerQuestionDto questionDetails) {
         setCorrectAnswer(questionDetails.getCorrectAnswer());
-        setPattern(questionDetails.getPattern());
+
+        if(questionDetails.getExpression() != null) {
+            setExpression(questionDetails.getExpression());
+        }
     }
 
     @Override

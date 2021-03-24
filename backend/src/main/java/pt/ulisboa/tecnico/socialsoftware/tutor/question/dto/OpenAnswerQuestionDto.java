@@ -9,14 +9,14 @@ import java.util.regex.Pattern;
 
 public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     private String correctAnswer;
-    private Pattern pattern;
+    private Pattern expression;
 
     public OpenAnswerQuestionDto() {
     }
 
     public OpenAnswerQuestionDto(OpenAnswerQuestion question) {
         this.correctAnswer = question.getCorrectAnswer();
-        this.pattern = question.getPattern();
+        this.expression = question.getExpression();
     }
 
     public String getCorrectAnswer() {
@@ -27,12 +27,12 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
         this.correctAnswer = correctAnswer;
     }
 
-    public Pattern getPattern() {
-        return pattern;
+    public Pattern getExpression() {
+        return expression;
     }
 
-    public void setPattern(Pattern pattern) {
-        this.pattern = pattern;
+    public void setExpression(Pattern expression) {
+        this.expression = expression;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     public String toString() {
         return "OpenAnswerQuestionDto{" +
                 "correctAnswer='" + correctAnswer + '\'' +
-                ", pattern=" + pattern +
+                ", expression=" + expression +
                 '}';
     }
 
