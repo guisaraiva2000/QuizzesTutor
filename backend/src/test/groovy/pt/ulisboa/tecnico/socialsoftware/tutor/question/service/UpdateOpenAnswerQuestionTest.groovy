@@ -12,6 +12,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 
+import java.util.regex.Pattern
+
 @DataJpaTest
 class UpdateOpenAnswerQuestionTest extends SpockTest {
     def question
@@ -30,20 +32,25 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         question.setImage(image)
         def questionDetails = new OpenAnswerQuestion()
         questionDetails.setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDetails.setExpression(OPEN_QUESTION_1_EXPRESSION)
         question.setQuestionDetails(questionDetails)
         questionDetailsRepository.save(questionDetails)
         questionRepository.save(question)
     }
 
 
-    def "update an open answer question"() {
+    def "update an open answer question with an expression"() {
         given: "a changed question"
         def questionDto = new QuestionDto(question)
         questionDto.setTitle(QUESTION_2_TITLE)
         questionDto.setContent(QUESTION_2_CONTENT)
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+
         and: "changed correct answer"
         questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_2_ANSWER)
+
+        and: "changed expression"
+        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_2_EXPRESSION)
         questionRepository.save(question)
 
         when:
@@ -59,22 +66,10 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         result.getStatus() == Question.Status.AVAILABLE
         result.getImage() != null
         result.getCourse() == externalCourse
-        and: 'a correct answer is changed'
+        and: 'a correct answer and expression are changed'
         def resultQuestion = (OpenAnswerQuestion) result.getQuestionDetails()
         resultQuestion.getCorrectAnswer() == OPEN_QUESTION_2_ANSWER
-    }
-
-    def "update open answer question title with missing data"() {
-        given: 'a question'
-        def questionDto = new QuestionDto(question)
-        questionDto.setTitle('     ')
-
-        when:
-        questionService.updateQuestion(question.getId(), questionDto)
-
-        then: "the question an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.INVALID_TITLE_FOR_QUESTION
+        resultQuestion.getExpression() == OPEN_QUESTION_2_EXPRESSION
     }
 
     def "update open answer question correct answer with missing data"() {
@@ -88,6 +83,23 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         then: "the question an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
+    }
+
+    def "update open answer changed expression to blank"() {
+        given: "a changed expression"
+        def questionDto = new QuestionDto(question)
+        questionDto.getQuestionDetailsDto().setExpression(Pattern.compile("", Pattern.CASE_INSENSITIVE))
+        questionRepository.save(question)
+
+        when:
+        questionService.updateQuestion(question.getId(), questionDto)
+
+        then: "the question is changed"
+        def result = questionRepository.findAll().get(0)
+
+        and: 'a correct answer and expression are changed'
+        def resultQuestion = (OpenAnswerQuestion) result.getQuestionDetails()
+        resultQuestion.getExpression()toString()equals("")
     }
 
 

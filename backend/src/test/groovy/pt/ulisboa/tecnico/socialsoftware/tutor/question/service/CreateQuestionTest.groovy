@@ -328,7 +328,7 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setStatus(Question.Status.AVAILABLE.name())
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
         questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        questionDto.getQuestionDetailsDto().setPattern(OPEN_QUESTION_1_EXPRESSION)
+        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_EXPRESSION)
 
         when:
         def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
@@ -341,7 +341,7 @@ class CreateQuestionTest extends SpockTest {
         result.getTitle() == QUESTION_1_TITLE
         result.getContent() == QUESTION_1_CONTENT
         result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
-        result.getQuestionDetailsDto().getPattern() == OPEN_QUESTION_1_EXPRESSION
+        result.getQuestionDetailsDto().getExpression() == OPEN_QUESTION_1_EXPRESSION
 
         result.getImage() == null
 
@@ -358,10 +358,10 @@ class CreateQuestionTest extends SpockTest {
         externalCourse.getQuestions().contains(repoResult)
         def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
         repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
-        repoQuestion.getPattern() == OPEN_QUESTION_1_EXPRESSION
+        repoQuestion.getExpression() == OPEN_QUESTION_1_EXPRESSION
     }
 
-    def "cannot create an open answer question when the pattern does not match the correct answer"() {
+    def "cannot create an open answer question when the expression does not match the correct answer"() {
         given: "a questionDto"
         def questionDto = new QuestionDto()
         questionDto.setKey(1)
@@ -370,7 +370,7 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setStatus(Question.Status.AVAILABLE.name())
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
         questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        questionDto.getQuestionDetailsDto().setPattern(OPEN_QUESTION_1_MISMATCH_EXPRESSION)
+        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_MISMATCH_EXPRESSION)
 
         when:
         questionService.createQuestion(externalCourse.getId(), questionDto)
