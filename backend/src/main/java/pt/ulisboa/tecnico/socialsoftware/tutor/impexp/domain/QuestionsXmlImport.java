@@ -172,8 +172,8 @@ public class QuestionsXmlImport {
     private QuestionDetailsDto importOpenAnswerQuestion(Element questionElement) {
         OpenAnswerQuestionDto questionDto = new OpenAnswerQuestionDto();
         questionDto.setCorrectAnswer(questionElement.getChildText("correctAnswer"));
-        var pattern = Pattern.compile(questionElement.getChild("correctAnswer").getAttributeValue("pattern"));
-        questionDto.setPattern(pattern);
+        questionDto.setExpression(Pattern.compile(questionElement.getChild("correctAnswer").getAttributeValue("expression"),
+                Pattern.CASE_INSENSITIVE));
         return questionDto;
     }
 
