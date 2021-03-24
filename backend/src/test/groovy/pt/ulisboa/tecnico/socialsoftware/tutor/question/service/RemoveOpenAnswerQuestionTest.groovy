@@ -35,7 +35,7 @@ class RemoveOpenAnswerQuestionTest extends SpockTest {
         question.setImage(image)
         def questionDetails = new OpenAnswerQuestion()
         questionDetails.setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        question.setQuestionDetails(questionDetails)
+        questionDetails.setExpression(OPEN_QUESTION_1_EXPRESSION)
         question.setQuestionDetails(questionDetails)
         questionDetailsRepository.save(questionDetails)
         questionRepository.save(question)
