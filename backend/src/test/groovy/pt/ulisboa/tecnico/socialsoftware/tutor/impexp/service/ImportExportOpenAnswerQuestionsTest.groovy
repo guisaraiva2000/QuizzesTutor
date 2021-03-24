@@ -24,7 +24,7 @@ class ImportExportOpenAnswerQuestionsTest extends SpockTest {
 
         def openAnswerQuestionDto = new OpenAnswerQuestionDto()
         openAnswerQuestionDto.setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        openAnswerQuestionDto.setPattern(OPEN_QUESTION_1_PATTERN)
+        openAnswerQuestionDto.setExpression(OPEN_QUESTION_1_EXPRESSION)
 
         def image = new ImageDto()
         image.setUrl(IMAGE_1_URL)
@@ -59,7 +59,7 @@ class ImportExportOpenAnswerQuestionsTest extends SpockTest {
 
         def openAnswerDetailsDto = (OpenAnswerQuestionDto) questionResult.getQuestionDetailsDto()
         openAnswerDetailsDto.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
-        openAnswerDetailsDto.getPattern().toString() == OPEN_QUESTION_1_ANSWER
+        openAnswerDetailsDto.getExpression().toString() == OPEN_QUESTION_1_EXPRESSION.toString()
     }
 
     def 'export to latex'() {
