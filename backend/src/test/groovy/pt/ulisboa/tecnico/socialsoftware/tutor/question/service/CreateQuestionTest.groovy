@@ -309,7 +309,7 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setContent(QUESTION_1_CONTENT)
         questionDto.setStatus(Question.Status.AVAILABLE.name())
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
+        questionDto.getQuestionDetailsDto().setCorrectAnswer('    ')
 
         when:
         def result = questionService.createQuestion(externalCourse.getId(), questionDto)

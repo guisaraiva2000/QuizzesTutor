@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.Updator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
@@ -32,6 +34,9 @@ public class OpenAnswerQuestion extends QuestionDetails {
     }
 
     public void setCorrectAnswer(String correctAnswer) {
+        if (correctAnswer == null || correctAnswer.trim().isEmpty()) {
+            throw new TutorException(ErrorMessage.NO_CORRECT_ANSWER);
+        }
         this.correctAnswer = correctAnswer;
     }
 
