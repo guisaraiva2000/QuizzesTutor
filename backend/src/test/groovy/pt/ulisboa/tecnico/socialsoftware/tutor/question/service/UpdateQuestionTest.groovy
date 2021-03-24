@@ -173,7 +173,7 @@ class UpdateQuestionTest extends SpockTest {
         exception.getErrorMessage() == ErrorMessage.ONE_CORRECT_OPTION_NEEDED
     }
 
-    def "update question with two options true and updtate number of rights"() {
+    def "update question with two options true and update number of rights"() {
         given: 'a question'
         def questionDto = new QuestionDto(question)
         questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())

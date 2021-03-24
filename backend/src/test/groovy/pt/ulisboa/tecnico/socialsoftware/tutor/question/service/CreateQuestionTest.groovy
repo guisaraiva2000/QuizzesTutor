@@ -429,7 +429,7 @@ class CreateQuestionTest extends SpockTest {
         result.getTitle() == QUESTION_1_TITLE
         result.getContent() == QUESTION_1_CONTENT
         result.getImage() == null
-        result.getQuestionDetails().getOptions().size() == 1
+        result.getQuestionDetails().getOptions().size() == 2
         result.getCourse().getName() == COURSE_1_NAME
         externalCourse.getQuestions().contains(result)
         def resOption = result.getQuestionDetails().getOptions().get(0)
@@ -483,7 +483,7 @@ class CreateQuestionTest extends SpockTest {
         result.getImage().getId() != null
         result.getImage().getUrl() == IMAGE_1_URL
         result.getImage().getWidth() == 20
-        result.getQuestionDetails().getOptions().size() == 2
+        result.getQuestionDetails().getOptions().size() == 3
     }
 
     def "create two multiple choice questions"() {
