@@ -82,8 +82,8 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         optionDto.setCorrect(true)
         options.add(optionDto)
         questionDto.getQuestionDetailsDto().setOptions(options)
+        questionService.createQuestion(questionId, questionDto)
 
-        questionId = questionService.createQuestion(externalCourse.getId(), questionDto).getId()
 
         def questionsXml = questionService.exportQuestionsToXml()
         print questionsXml
@@ -103,14 +103,17 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         def imageResult = questionResult.getImage()
         imageResult.getWidth() == 20
         imageResult.getUrl() == IMAGE_1_URL
-        questionResult.getQuestionDetailsDto().getOptions().size() == 2
+        questionResult.getQuestionDetailsDto().getOptions().size() == 3
         def optionOneResult = questionResult.getQuestionDetailsDto().getOptions().get(0)
         def optionTwoResult = questionResult.getQuestionDetailsDto().getOptions().get(1)
+        def optionThreeResult = questionResult.getQuestionDetailsDto().getOptions().get(2)
         optionOneResult.getSequence() + optionTwoResult.getSequence() == 1
         optionOneResult.getContent() == OPTION_1_CONTENT
         optionTwoResult.getContent() == OPTION_1_CONTENT
-        !(optionOneResult.isCorrect() && optionTwoResult.isCorrect())
+        optionThreeResult.getContent() == OPTION_1_CONTENT
+        !(optionOneResult.isCorrect() && optionTwoResult.isCorrect() )
         optionOneResult.isCorrect() || optionTwoResult.isCorrect()
+        optionThreeResult.isCorrect()
     }
 
     def 'export and import questions to xml'() {
