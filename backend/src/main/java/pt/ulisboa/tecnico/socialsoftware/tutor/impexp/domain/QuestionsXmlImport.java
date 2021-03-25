@@ -124,10 +124,12 @@ public class QuestionsXmlImport {
         List<OptionDto> optionDtos = new ArrayList<>();
         for (Element optionElement : questionElement.getChild("options").getChildren("option")) {
             Integer optionSequence = Integer.valueOf(optionElement.getAttributeValue("sequence"));
+            Integer optionPriority = Integer.valueOf(optionElement.getAttributeValue("priority"));
             String optionContent = optionElement.getAttributeValue("content");
             boolean correct = Boolean.parseBoolean(optionElement.getAttributeValue("correct"));
 
             OptionDto optionDto = new OptionDto();
+            optionDto.setPriority(optionPriority);
             optionDto.setSequence(optionSequence);
             optionDto.setContent(optionContent);
             optionDto.setCorrect(correct);

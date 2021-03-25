@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 public class OptionDto implements Serializable {
     private Integer id;
+    private Integer priority=0;
     private Integer sequence;
     private boolean correct;
     private String content;
@@ -16,6 +17,7 @@ public class OptionDto implements Serializable {
 
     public OptionDto(Option option) {
         this.id = option.getId();
+        this.priority = option.getPriority();
         this.sequence = option.getSequence();
         this.content = option.getContent();
         this.correct = option.isCorrect();
@@ -23,6 +25,7 @@ public class OptionDto implements Serializable {
 
     public OptionDto(CodeFillInOption option) {
         this.id = option.getId();
+        this.priority = 2;
         this.sequence = option.getSequence();
         this.content = option.getContent();
         this.correct = option.isCorrect();
@@ -39,6 +42,10 @@ public class OptionDto implements Serializable {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
+
+    public Integer getPriority() { return priority; }
+
+    public void setPriority(Integer priority) { this.priority = priority; }
 
     public boolean isCorrect() {
         return correct;
@@ -60,6 +67,7 @@ public class OptionDto implements Serializable {
     public String toString() {
         return "OptionDto{" +
                 "id=" + id +
+                ", priority=" + priority +
                 ", correct=" + correct +
                 ", content='" + content + '\'' +
                 '}';
