@@ -9,9 +9,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeFillInQuestio
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.*
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import spock.lang.Unroll
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 
 @DataJpaTest
 class CreateQuestionTest extends SpockTest {
@@ -197,7 +196,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_ONE_OPTION_NEEDED
+        exception.getErrorMessage() == AT_LEAST_ONE_OPTION_NEEDED
     }
 
     def "cannot create a code fill in question with fillin spots without options"() {
@@ -218,7 +217,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
     }
 
     def "cannot create a code fill in question with fillin spots without correct options"() {
@@ -242,7 +241,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
     }
 
     def "create an open answer question with correct answer"() {
@@ -282,41 +281,6 @@ class CreateQuestionTest extends SpockTest {
         def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
         repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
 
-    }
-
-    def "cannot create an open answer question without a correct answer"() {
-        given: "a questionDto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
-        questionDto.setTitle(QUESTION_1_TITLE)
-        questionDto.setContent(QUESTION_1_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
-        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-
-        when:
-        questionService.createQuestion(externalCourse.getId(), questionDto)
-
-        then: "exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
-    }
-
-    def "cannot create an open answer question when the correct answer has only white spaces"() {
-        given: "a questionDto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
-        questionDto.setTitle(QUESTION_1_TITLE)
-        questionDto.setContent(QUESTION_1_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
-        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer(' ')
-
-        when:
-        questionService.createQuestion(externalCourse.getId(), questionDto)
-
-        then: "exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
     }
 
     def "create an open answer question with a matching Java regex expression"() {
@@ -361,7 +325,10 @@ class CreateQuestionTest extends SpockTest {
         repoQuestion.getExpression().toString() == OPEN_QUESTION_1_EXPRESSION
     }
 
-    def "cannot create an open answer question when the expression does not match the correct answer"() {
+
+
+    @Unroll("invalid arguments: #correctAnswer | #expression || #errorMessage")
+    def "invalid input values"() {
         given: "a questionDto"
         def questionDto = new QuestionDto()
         questionDto.setKey(1)
@@ -369,53 +336,24 @@ class CreateQuestionTest extends SpockTest {
         questionDto.setContent(QUESTION_1_CONTENT)
         questionDto.setStatus(Question.Status.AVAILABLE.name())
         questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_MISMATCH_EXPRESSION)
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(correctAnswer)
+        questionDto.getQuestionDetailsDto().setExpression(expression)
 
         when:
         questionService.createQuestion(externalCourse.getId(), questionDto)
 
-        then: "exception is thrown"
+        then: "the question an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.EXPRESSION_NEEDS_TO_MATCH_ANSWER
-    }
+        exception.getErrorMessage() == errorMessage
 
-    def "cannot create an open answer question when the expression is invalid"() {
-        given: "a questionDto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
-        questionDto.setTitle(QUESTION_1_TITLE)
-        questionDto.setContent(QUESTION_1_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
-        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_INVALID_EXPRESSION)
-
-        when:
-        questionService.createQuestion(externalCourse.getId(), questionDto)
-
-        then: "exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.INVALID_EXPRESSION
-    }
-
-    def "cannot create an open answer question when the expression has only spaces"() {
-        given: "a questionDto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
-        questionDto.setTitle(QUESTION_1_TITLE)
-        questionDto.setContent(QUESTION_1_CONTENT)
-        questionDto.setStatus(Question.Status.AVAILABLE.name())
-        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
-        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
-        questionDto.getQuestionDetailsDto().setExpression("            ")
-
-        when:
-        questionService.createQuestion(externalCourse.getId(), questionDto)
-
-        then: "exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.EXPRESSION_WITH_SPACES_ONLY
+        where:
+        correctAnswer           | expression                           || errorMessage
+        null                    | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        ""                      | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        "         "             | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        OPEN_QUESTION_1_ANSWER  | OPEN_QUESTION_1_MISMATCH_EXPRESSION  || EXPRESSION_NEEDS_TO_MATCH_ANSWER
+        OPEN_QUESTION_1_ANSWER  | "["                                  || INVALID_EXPRESSION
+        OPEN_QUESTION_1_ANSWER  | "          "                         || EXPRESSION_WITH_SPACES_ONLY
     }
 
     @Unroll
@@ -426,7 +364,7 @@ class CreateQuestionTest extends SpockTest {
         questionService.createQuestion(nonExistentId, questionDto)
         then:
         def exception = thrown(TutorException)
-        exception.errorMessage == ErrorMessage.COURSE_NOT_FOUND
+        exception.errorMessage == COURSE_NOT_FOUND
         where:
         nonExistentId << [-1, 0, 200]
     }
