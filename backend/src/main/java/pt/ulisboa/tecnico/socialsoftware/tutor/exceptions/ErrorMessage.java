@@ -132,7 +132,9 @@ public enum ErrorMessage {
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file"),
 
-    PATTERN_NEEDS_TO_MATCH_ANSWER("Expression needs to be in correct answer"),
+    EXPRESSION_NEEDS_TO_MATCH_ANSWER("Expression needs to be in correct answer"),
+    INVALID_EXPRESSION("Expression can not be compiled"),
+    EXPRESSION_WITH_SPACES_ONLY("Existing expression needs to contain chars"),
 
     INVALID_CSV_FILE_FORMAT("The csv file uploaded has a wrong format"),
     WRONG_FORMAT_ON_CSV_LINE("Csv File has a wrong format on line: %d");

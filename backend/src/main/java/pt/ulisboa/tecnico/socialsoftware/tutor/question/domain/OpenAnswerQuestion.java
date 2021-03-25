@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDt
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -19,7 +20,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class OpenAnswerQuestion extends QuestionDetails {
 
     private String correctAnswer;
-    private Pattern expression;
+    private String expression;
 
     public OpenAnswerQuestion() {
         super();
@@ -41,16 +42,23 @@ public class OpenAnswerQuestion extends QuestionDetails {
         this.correctAnswer = correctAnswer;
     }
 
-    public Pattern getExpression() {
+    public String getExpression() {
         return expression;
     }
 
-    public void setExpression(Pattern expression) {
-        if (correctAnswer == null || correctAnswer.trim().isEmpty()) { this.expression = expression; }
-        else if (!expression.matcher(correctAnswer).find()) {
-          throw new TutorException(PATTERN_NEEDS_TO_MATCH_ANSWER);
+    public void setExpression(String expression) {
+        try {
+            Pattern p = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+            if(expression.trim().isEmpty() && expression.length() != 0) {
+                throw new TutorException(EXPRESSION_WITH_SPACES_ONLY);
+            }
+            else if (!p.matcher(correctAnswer).find()) {
+                throw new TutorException(EXPRESSION_NEEDS_TO_MATCH_ANSWER);
+            }
+            this.expression = expression;
+        } catch (PatternSyntaxException pse) {
+            throw new TutorException(INVALID_EXPRESSION);
         }
-        this.expression = expression;
     }
 
     @Override

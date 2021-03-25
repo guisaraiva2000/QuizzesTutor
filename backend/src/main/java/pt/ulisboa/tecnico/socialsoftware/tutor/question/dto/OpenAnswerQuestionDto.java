@@ -4,12 +4,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestio
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionDetails;
 
-import java.util.regex.Pattern;
 
 
 public class OpenAnswerQuestionDto extends QuestionDetailsDto {
     private String correctAnswer;
-    private Pattern expression;
+    private String expression;
 
     public OpenAnswerQuestionDto() {
     }
@@ -27,11 +26,11 @@ public class OpenAnswerQuestionDto extends QuestionDetailsDto {
         this.correctAnswer = correctAnswer;
     }
 
-    public Pattern getExpression() {
+    public String getExpression() {
         return expression;
     }
 
-    public void setExpression(Pattern expression) {
+    public void setExpression(String expression) {
         this.expression = expression;
     }
 
