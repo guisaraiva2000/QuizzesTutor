@@ -486,7 +486,7 @@ class CreateQuestionTest extends SpockTest {
         result.getQuestionDetails().getOptions().size() == 3
     }
 
-    def "create two multiple choice questions"() {
+    def "create two multiple choice questions with 2 correct answers"() {
         given: "a questionDto"
         def questionDto = new QuestionDto()
         questionDto.setTitle(QUESTION_1_TITLE)

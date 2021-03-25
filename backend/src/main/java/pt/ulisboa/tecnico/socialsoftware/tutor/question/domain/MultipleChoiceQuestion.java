@@ -40,7 +40,6 @@ public class MultipleChoiceQuestion extends QuestionDetails {
         if (options.stream().filter(OptionDto::isCorrect).count() < 1) {
             throw new TutorException(ONE_CORRECT_OPTION_NEEDED);
         }
-        //verifcar nº de correctos e igual ao existentes
 
         int index = 0;
         for (OptionDto optionDto : options) {
