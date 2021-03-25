@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
 class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
     def questionId
     def teacher
+    def optionDto
 
     def setup() {
         def questionDto = new QuestionDto()
@@ -65,24 +66,27 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         image.setWidth(20)
         questionDto.setImage(image)
 
-        def optionDto = new OptionDto()
+        optionDto = new OptionDto()
         optionDto.setSequence(0)
+        optionDto.setPriority(2)
         optionDto.setContent(OPTION_1_CONTENT)
         optionDto.setCorrect(true)
         def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setSequence(1)
+        optionDto.setPriority(2)
         optionDto.setContent(OPTION_2_CONTENT)
         optionDto.setCorrect(false)
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setSequence(2)
+        optionDto.setPriority(2)
         optionDto.setContent(OPTION_1_CONTENT)
         optionDto.setCorrect(true)
         options.add(optionDto)
         questionDto.getQuestionDetailsDto().setOptions(options)
-        questionService.createQuestion(questionId, questionDto)
+        questionId = questionService.createQuestion(externalCourse.getId(), questionDto).getId()
 
 
         def questionsXml = questionService.exportQuestionsToXml()
@@ -109,11 +113,12 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         def optionThreeResult = questionResult.getQuestionDetailsDto().getOptions().get(2)
         optionOneResult.getSequence() + optionTwoResult.getSequence() == 1
         optionOneResult.getContent() == OPTION_1_CONTENT
-        optionTwoResult.getContent() == OPTION_1_CONTENT
+        optionTwoResult.getContent() == OPTION_2_CONTENT
         optionThreeResult.getContent() == OPTION_1_CONTENT
         !(optionOneResult.isCorrect() && optionTwoResult.isCorrect() )
         optionOneResult.isCorrect() || optionTwoResult.isCorrect()
         optionThreeResult.isCorrect()
+        optionOneResult.getPriority()==2
     }
 
     def 'export and import questions to xml'() {
@@ -181,6 +186,7 @@ class ImportExportMultipleChoiceQuestionsTest extends SpockTest {
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setSequence(2)
+        optionDto.setPriority(2)
         optionDto.setContent(OPTION_1_CONTENT)
         optionDto.setCorrect(true)
         options.add(optionDto)

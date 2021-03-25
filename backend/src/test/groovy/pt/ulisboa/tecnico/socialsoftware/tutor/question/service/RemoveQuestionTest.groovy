@@ -50,6 +50,7 @@ class RemoveQuestionTest extends SpockTest {
         optionOK.setContent(OPTION_1_CONTENT)
         optionOK.setCorrect(true)
         optionOK.setSequence(0)
+        optionOK.setPriority(1)
         optionOK.setQuestionDetails(questionDetails)
         optionRepository.save(optionOK)
 
@@ -122,6 +123,7 @@ class RemoveQuestionTest extends SpockTest {
         optionOK2.setContent(OPTION_1_CONTENT)
         optionOK2.setCorrect(true)
         optionOK2.setSequence(0)
+        optionOK2.setPriority(1)
         optionOK2.setQuestionDetails(questionDetails)
 
         optionRepository.save(optionOK2)
@@ -162,6 +164,7 @@ class RemoveQuestionTest extends SpockTest {
         optionOK2.setContent(OPTION_1_CONTENT)
         optionOK2.setCorrect(true)
         optionOK2.setSequence(0)
+        optionOK2.setPriority(1)
         optionOK2.setQuestionDetails(questionDetails)
 
         optionRepository.save(optionOK2)

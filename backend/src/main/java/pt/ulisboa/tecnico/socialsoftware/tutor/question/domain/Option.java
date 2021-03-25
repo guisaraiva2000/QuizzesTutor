@@ -27,6 +27,9 @@ public class Option implements DomainEntity {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean correct;
 
+    @Column()
+    private Integer priority = 0;
+
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
@@ -41,6 +44,7 @@ public class Option implements DomainEntity {
     }
 
     public Option(OptionDto option) {
+        setPriority(option.getPriority());
         setSequence(option.getSequence());
         setContent(option.getContent());
         setCorrect(option.isCorrect());
@@ -65,6 +69,10 @@ public class Option implements DomainEntity {
 
         this.sequence = sequence;
     }
+
+    public Integer getPriority() { return priority; }
+
+    public void setPriority(Integer priority) { this.priority = priority; }
 
     public boolean isCorrect() {
         return correct;
