@@ -4,15 +4,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Image
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
+import spock.lang.Unroll
 
-import java.util.regex.Pattern
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
+
+
 
 @DataJpaTest
 class UpdateOpenAnswerQuestionTest extends SpockTest {
@@ -72,45 +74,6 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         resultQuestion.getExpression().toString() == OPEN_QUESTION_2_EXPRESSION
     }
 
-    def "update open answer question correct answer with missing data"() {
-        given: 'a question'
-        def questionDto = new QuestionDto(question)
-        questionDto.getQuestionDetailsDto().setCorrectAnswer('     ')
-
-        when:
-        questionService.updateQuestion(question.getId(), questionDto)
-
-        then: "the question an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
-    }
-
-    def "update open answer question with invalid expression"() {
-        given: 'a question'
-        def questionDto = new QuestionDto(question)
-        questionDto.getQuestionDetailsDto().setExpression("[")
-
-        when:
-        questionService.updateQuestion(question.getId(), questionDto)
-
-        then: "the question an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.INVALID_EXPRESSION
-    }
-
-    def "update open answer question expression with only spaces"() {
-        given: 'a question'
-        def questionDto = new QuestionDto(question)
-        questionDto.getQuestionDetailsDto().setExpression("      ")
-
-        when:
-        questionService.updateQuestion(question.getId(), questionDto)
-
-        then: "the question an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.EXPRESSION_WITH_SPACES_ONLY
-    }
-
     def "update open answer changed expression to blank"() {
         given: "a changed expression"
         def questionDto = new QuestionDto(question)
@@ -128,6 +91,30 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         resultQuestion.getExpression().toString() == ""
     }
 
+    @Unroll("invalid arguments: #correctAnswer | #expression || #errorMessage")
+    def "invalid input values"() {
+        given: "a changed expression"
+        def questionDto = new QuestionDto(question)
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(correctAnswer)
+        questionDto.getQuestionDetailsDto().setExpression(expression)
+        questionRepository.save(question)
+
+        when:
+        questionService.updateQuestion(question.getId(), questionDto)
+
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.errorMessage == errorMessage
+
+        where:
+        correctAnswer           | expression                           || errorMessage
+        null                    | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        ""                      | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        "         "             | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        OPEN_QUESTION_1_ANSWER  | OPEN_QUESTION_1_MISMATCH_EXPRESSION  || EXPRESSION_NEEDS_TO_MATCH_ANSWER
+        OPEN_QUESTION_1_ANSWER  | "["                                  || INVALID_EXPRESSION
+        OPEN_QUESTION_1_ANSWER  | "          "                         || EXPRESSION_WITH_SPACES_ONLY
+    }
 
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
