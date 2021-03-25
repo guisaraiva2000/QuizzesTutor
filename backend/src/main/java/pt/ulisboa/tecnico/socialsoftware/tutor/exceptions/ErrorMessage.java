@@ -98,11 +98,12 @@ public enum ErrorMessage {
     WRONG_TOURNAMENT_PASSWORD("Wrong tournament password for private tournament %d"),
 
     NO_CORRECT_OPTION("Question does not have a correct option"),
+    NO_CORRECT_ANSWER("Question does not have a correct answer"),
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     NOT_ENOUGH_QUESTIONS_TOURNAMENT("Not enough questions to create a quiz. One of the selected topics might not be available now. Please go check it"),
     AT_LEAST_ONE_OPTION_NEEDED("Questions need to have at least one option."),
     AT_LEAST_THREE_SLOTS_NEEDED("Order questions need to have at least 3 used slots."),
-    ONE_CORRECT_OPTION_NEEDED("Questions need to have 1 and only 1 correct option"),
+    ONE_CORRECT_OPTION_NEEDED("Questions need to have 1 or more correct options"),
     CANNOT_CHANGE_ANSWERED_QUESTION("Can not change answered question"),
     QUIZ_HAS_ANSWERS("Quiz already has answers"),
     QUIZ_ALREADY_COMPLETED("Quiz already completed"),
@@ -139,6 +140,10 @@ public enum ErrorMessage {
 
     ACCESS_DENIED("You do not have permission to view this resource"),
     CANNOT_OPEN_FILE("Cannot open file"),
+
+    EXPRESSION_NEEDS_TO_MATCH_ANSWER("Expression needs to be in correct answer"),
+    INVALID_EXPRESSION("Expression can not be compiled"),
+    EXPRESSION_WITH_SPACES_ONLY("Existing expression needs to contain chars"),
 
     INVALID_CSV_FILE_FORMAT("The csv file uploaded has a wrong format"),
     WRONG_FORMAT_ON_CSV_LINE("Csv File has a wrong format on line: %d");

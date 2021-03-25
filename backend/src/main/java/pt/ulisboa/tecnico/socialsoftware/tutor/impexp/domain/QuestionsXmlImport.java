@@ -19,6 +19,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -107,6 +108,9 @@ public class QuestionsXmlImport {
             case Question.QuestionTypes.CODE_FILL_IN_QUESTION:
                 questionDetailsDto = importCodeFillInQuestion(questionElement);
                 break;
+            case Question.QuestionTypes.OPEN_ANSWER_QUESTION:
+                questionDetailsDto = importOpenAnswerQuestion(questionElement);
+                break;
             case Question.QuestionTypes.CODE_ORDER_QUESTION:
                 questionDetailsDto = importCodeOrderQuestion(questionElement);
                 break;
@@ -124,10 +128,12 @@ public class QuestionsXmlImport {
         List<OptionDto> optionDtos = new ArrayList<>();
         for (Element optionElement : questionElement.getChild("options").getChildren("option")) {
             Integer optionSequence = Integer.valueOf(optionElement.getAttributeValue("sequence"));
+            Integer optionPriority = Integer.valueOf(optionElement.getAttributeValue("priority"));
             String optionContent = optionElement.getAttributeValue("content");
             boolean correct = Boolean.parseBoolean(optionElement.getAttributeValue("correct"));
 
             OptionDto optionDto = new OptionDto();
+            optionDto.setPriority(optionPriority);
             optionDto.setSequence(optionSequence);
             optionDto.setContent(optionContent);
             optionDto.setCorrect(correct);
@@ -165,6 +171,14 @@ public class QuestionsXmlImport {
             spots.add(spot);
         }
         questionDto.setFillInSpots(spots);
+        return questionDto;
+    }
+
+
+    private QuestionDetailsDto importOpenAnswerQuestion(Element questionElement) {
+        OpenAnswerQuestionDto questionDto = new OpenAnswerQuestionDto();
+        questionDto.setCorrectAnswer(questionElement.getChildText("correctAnswer"));
+        questionDto.setExpression(questionElement.getChild("correctAnswer").getAttributeValue("expression"));
         return questionDto;
     }
 

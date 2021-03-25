@@ -37,7 +37,7 @@ public class MultipleChoiceQuestion extends QuestionDetails {
     }
 
     public void setOptions(List<OptionDto> options) {
-        if (options.stream().filter(OptionDto::isCorrect).count() != 1) {
+        if (options.stream().filter(OptionDto::isCorrect).count() < 1) {
             throw new TutorException(ONE_CORRECT_OPTION_NEEDED);
         }
 
@@ -64,6 +64,7 @@ public class MultipleChoiceQuestion extends QuestionDetails {
     }
 
     public Integer getCorrectOptionId() {
+        //verificar situao mais que uma correcta integer
         return this.getOptions().stream()
                 .filter(Option::isCorrect)
                 .findAny()
