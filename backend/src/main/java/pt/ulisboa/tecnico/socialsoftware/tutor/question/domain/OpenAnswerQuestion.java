@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDt
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -102,6 +103,11 @@ public class OpenAnswerQuestion extends QuestionDetails {
     @Override
     public String getCorrectAnswerRepresentation() {
         return correctAnswer;
+    }
+
+    @Override
+    public String getAnswerRepresentation(List<Integer> selectedIds) {
+        return null;
     }
 
     @Override
