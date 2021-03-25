@@ -122,13 +122,10 @@ class SpockTest extends Specification {
 
     public static final String OPEN_QUESTION_1_ANSWER = "Correct Answer 1"
     public static final String OPEN_QUESTION_2_ANSWER = "Correct Answer 2"
-
-    public static final Pattern OPEN_QUESTION_1_PATTERN = Pattern.compile(OPEN_QUESTION_1_ANSWER)
-    public static final Pattern OPEN_QUESTION_1_EXPRESSION = Pattern.compile("answer 1", Pattern.CASE_INSENSITIVE)
-    public static final Pattern OPEN_QUESTION_2_EXPRESSION = Pattern.compile("answer 2", Pattern.CASE_INSENSITIVE)
-
-    public static final Pattern OPEN_QUESTION_1_MISMATCH_EXPRESSION = Pattern.compile("wrong", Pattern.CASE_INSENSITIVE)
-
+    public static final String OPEN_QUESTION_1_EXPRESSION = "answer 1"
+    public static final String OPEN_QUESTION_2_EXPRESSION = "answer 2"
+    public static final String OPEN_QUESTION_1_MISMATCH_EXPRESSION = "wrong"
+    public static final String OPEN_QUESTION_1_INVALID_EXPRESSION = "["
 
 
     public static final String ROLE_STUDENT = "ROLE_STUDENT"

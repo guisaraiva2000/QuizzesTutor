@@ -69,7 +69,7 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         and: 'a correct answer and expression are changed'
         def resultQuestion = (OpenAnswerQuestion) result.getQuestionDetails()
         resultQuestion.getCorrectAnswer() == OPEN_QUESTION_2_ANSWER
-        resultQuestion.getExpression() == OPEN_QUESTION_2_EXPRESSION
+        resultQuestion.getExpression().toString() == OPEN_QUESTION_2_EXPRESSION
     }
 
     def "update open answer question correct answer with missing data"() {
@@ -85,10 +85,36 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
         exception.getErrorMessage() == ErrorMessage.NO_CORRECT_ANSWER
     }
 
+    def "update open answer question with invalid expression"() {
+        given: 'a question'
+        def questionDto = new QuestionDto(question)
+        questionDto.getQuestionDetailsDto().setExpression("[")
+
+        when:
+        questionService.updateQuestion(question.getId(), questionDto)
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.INVALID_EXPRESSION
+    }
+
+    def "update open answer question expression with only spaces"() {
+        given: 'a question'
+        def questionDto = new QuestionDto(question)
+        questionDto.getQuestionDetailsDto().setExpression("      ")
+
+        when:
+        questionService.updateQuestion(question.getId(), questionDto)
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.EXPRESSION_WITH_SPACES_ONLY
+    }
+
     def "update open answer changed expression to blank"() {
         given: "a changed expression"
         def questionDto = new QuestionDto(question)
-        questionDto.getQuestionDetailsDto().setExpression(Pattern.compile("", Pattern.CASE_INSENSITIVE))
+        questionDto.getQuestionDetailsDto().setExpression("")
         questionRepository.save(question)
 
         when:
@@ -99,7 +125,7 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
 
         and: 'a correct answer and expression are changed'
         def resultQuestion = (OpenAnswerQuestion) result.getQuestionDetails()
-        resultQuestion.getExpression()toString()equals("")
+        resultQuestion.getExpression().toString() == ""
     }
 
 
