@@ -6,12 +6,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeFillInQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeOrderQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.*
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import spock.lang.Unroll
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 
 @DataJpaTest
 class CreateQuestionTest extends SpockTest {
@@ -197,7 +197,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_ONE_OPTION_NEEDED
+        exception.getErrorMessage() == AT_LEAST_ONE_OPTION_NEEDED
     }
 
     def "cannot create a code fill in question with fillin spots without options"() {
@@ -218,7 +218,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
     }
 
     def "cannot create a code fill in question with fillin spots without correct options"() {
@@ -242,7 +242,119 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
+    }
+
+    def "create an open answer question with correct answer"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+
+    }
+
+    def "create an open answer question with a matching Java regex expression"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_EXPRESSION)
+
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getQuestionDetailsDto().getExpression().toString() == OPEN_QUESTION_1_EXPRESSION
+
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        repoQuestion.getExpression().toString() == OPEN_QUESTION_1_EXPRESSION
+    }
+
+
+
+    @Unroll("invalid arguments: #correctAnswer | #expression || #errorMessage")
+    def "invalid input values"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(correctAnswer)
+        questionDto.getQuestionDetailsDto().setExpression(expression)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == errorMessage
+
+        where:
+        correctAnswer           | expression                           || errorMessage
+        null                    | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        ""                      | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        "         "             | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        OPEN_QUESTION_1_ANSWER  | OPEN_QUESTION_1_MISMATCH_EXPRESSION  || EXPRESSION_NEEDS_TO_MATCH_ANSWER
+        OPEN_QUESTION_1_ANSWER  | "["                                  || INVALID_EXPRESSION
+        OPEN_QUESTION_1_ANSWER  | "          "                         || EXPRESSION_WITH_SPACES_ONLY
     }
 
 
@@ -525,7 +637,7 @@ class CreateQuestionTest extends SpockTest {
         questionService.createQuestion(nonExistentId, questionDto)
         then:
         def exception = thrown(TutorException)
-        exception.errorMessage == ErrorMessage.COURSE_NOT_FOUND
+        exception.errorMessage == COURSE_NOT_FOUND
         where:
         nonExistentId << [-1, 0, 200]
 

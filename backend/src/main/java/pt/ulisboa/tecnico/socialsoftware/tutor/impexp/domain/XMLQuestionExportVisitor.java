@@ -90,6 +90,16 @@ public class XMLQuestionExportVisitor implements Visitor {
     }
 
     @Override
+    public void visitQuestionDetails(OpenAnswerQuestion question) {
+        this.currentElement.setAttribute("type", Question.QuestionTypes.OPEN_ANSWER_QUESTION);
+
+        Element correctAnswerElement = new Element("correctAnswer");
+        correctAnswerElement.setAttribute("expression", question.getExpression().toString());
+        correctAnswerElement.addContent(question.getCorrectAnswer());
+        this.currentElement.addContent(correctAnswerElement);
+    }
+
+    @Override
     public void visitFillInSpot(CodeFillInSpot spot) {
         Element spotElement = new Element("fillInSpot");
 
