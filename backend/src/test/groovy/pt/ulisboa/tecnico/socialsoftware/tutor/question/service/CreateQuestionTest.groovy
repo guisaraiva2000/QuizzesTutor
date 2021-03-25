@@ -438,7 +438,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
     }
 
     def "cannot create a code order question without 3 CodeOrderSlots"() {
@@ -469,7 +469,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
     }
 
     def "cannot create a code order question without 3 CodeOrderSlots with order"() {
@@ -505,7 +505,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
     }
 
 // Multiple choice more than 1 right
