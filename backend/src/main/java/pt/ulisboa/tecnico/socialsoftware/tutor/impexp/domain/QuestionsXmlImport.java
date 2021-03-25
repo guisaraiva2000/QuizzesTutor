@@ -111,6 +111,9 @@ public class QuestionsXmlImport {
             case Question.QuestionTypes.OPEN_ANSWER_QUESTION:
                 questionDetailsDto = importOpenAnswerQuestion(questionElement);
                 break;
+            case Question.QuestionTypes.CODE_ORDER_QUESTION:
+                questionDetailsDto = importCodeOrderQuestion(questionElement);
+                break;
             default:
                 throw new TutorException(QUESTION_TYPE_NOT_IMPLEMENTED, type);
         }
@@ -125,10 +128,12 @@ public class QuestionsXmlImport {
         List<OptionDto> optionDtos = new ArrayList<>();
         for (Element optionElement : questionElement.getChild("options").getChildren("option")) {
             Integer optionSequence = Integer.valueOf(optionElement.getAttributeValue("sequence"));
+            Integer optionPriority = Integer.valueOf(optionElement.getAttributeValue("priority"));
             String optionContent = optionElement.getAttributeValue("content");
             boolean correct = Boolean.parseBoolean(optionElement.getAttributeValue("correct"));
 
             OptionDto optionDto = new OptionDto();
+            optionDto.setPriority(optionPriority);
             optionDto.setSequence(optionSequence);
             optionDto.setContent(optionContent);
             optionDto.setCorrect(correct);
@@ -169,10 +174,27 @@ public class QuestionsXmlImport {
         return questionDto;
     }
 
+
     private QuestionDetailsDto importOpenAnswerQuestion(Element questionElement) {
         OpenAnswerQuestionDto questionDto = new OpenAnswerQuestionDto();
         questionDto.setCorrectAnswer(questionElement.getChildText("correctAnswer"));
         questionDto.setExpression(questionElement.getChild("correctAnswer").getAttributeValue("expression"));
+        return questionDto;
+    }
+
+    private QuestionDetailsDto importCodeOrderQuestion(Element questionElement) {
+        CodeOrderQuestionDto questionDto = new CodeOrderQuestionDto();
+        questionDto.setLanguage(Languages.valueOf(questionElement.getChild("orderSlots").getAttributeValue("language")));
+        var slots = new ArrayList<CodeOrderSlotDto>();
+        for (Element slotElement : questionElement.getChild("orderSlots").getChildren("slot")) {
+            var slot = new CodeOrderSlotDto();
+            slot.setOrder(Integer.valueOf(slotElement.getAttributeValue("order")));
+            slot.setSequence(Integer.valueOf(slotElement.getAttributeValue("sequence")));
+            slot.setContent(slotElement.getValue());
+
+            slots.add(slot);
+        }
+        questionDto.setCodeOrderSlots(slots);
         return questionDto;
     }
 

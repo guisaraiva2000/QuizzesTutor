@@ -139,10 +139,33 @@ public class XMLQuestionExportVisitor implements Visitor {
     public void visitOption(Option option) {
         Element optionElement = new Element("option");
 
+        optionElement.setAttribute("priority", String.valueOf(option.getPriority()));
         optionElement.setAttribute("sequence", String.valueOf(option.getSequence()));
         optionElement.setAttribute("content", option.getContent());
         optionElement.setAttribute("correct", String.valueOf(option.isCorrect()));
 
         this.currentElement.addContent(optionElement);
+    }
+
+    @Override
+    public void visitQuestionDetails(CodeOrderQuestion question) {
+        this.currentElement.setAttribute("type", Question.QuestionTypes.CODE_ORDER_QUESTION);
+
+        Element codeElement = new Element("orderSlots");
+        codeElement.setAttribute("language", question.getLanguage().toString());
+        this.currentElement.addContent(codeElement);
+
+        this.currentElement = codeElement;
+        question.visitCodeOrderSlots(this);
+    }
+
+    @Override
+    public void visitCodeOrderSlot(CodeOrderSlot codeOrderSlot) {
+        Element spotElement = new Element("slot");
+
+        spotElement.setAttribute("order", String.valueOf(codeOrderSlot.getOrder()));
+        spotElement.setAttribute("sequence", String.valueOf(codeOrderSlot.getSequence()));
+        spotElement.addContent(codeOrderSlot.getContent());
+        this.currentElement.addContent(spotElement);
     }
 }

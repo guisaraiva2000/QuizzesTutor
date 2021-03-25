@@ -43,6 +43,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -146,14 +147,19 @@ public class UserService {
         userRepository.findAll()
                 .stream()
                 .filter(user -> user.getAuthUser().isDemoStudent())
-                .forEach(user ->this.userRepository.delete(user));
+                .forEach(user -> {
+                    user.remove();
+                    this.userRepository.delete(user);
+                });
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED,
             propagation = Propagation.REQUIRED)
     public NotificationResponse<CourseExecutionDto> registerListOfUsersTransactional(InputStream stream, int courseExecutionId) {
         Notification notification = new Notification();
-        extractUserDtos(stream, notification).forEach(userDto -> registerExternalUserTransactional(courseExecutionId, userDto));
+        extractUserDtos(stream, notification).forEach(userDto -> {
+            registerExternalUserTransactional(courseExecutionId, userDto);
+        });
 
         CourseExecutionDto courseExecutionDto = courseExecutionRepository.findById(courseExecutionId)
                 .map(CourseExecutionDto::new)
@@ -172,11 +178,11 @@ public class UserService {
         try (BufferedReader br = new BufferedReader(isr)) {
             while ((line = br.readLine()) != null) {
                 String[] userInfo = line.split(cvsSplitBy);
-                if (userInfo.length == 2) {
+                if (userInfo.length == 3) {
                     auxRole = User.Role.STUDENT;
-                } else if (userInfo.length == 3 && (userInfo[2].equalsIgnoreCase("student") 
-                            || userInfo[2].equalsIgnoreCase("teacher"))) {
-                    auxRole = User.Role.valueOf(userInfo[2].toUpperCase());
+                } else if (userInfo.length == 4 && (userInfo[3].equalsIgnoreCase("student")
+                            || userInfo[3].equalsIgnoreCase("teacher"))) {
+                    auxRole = User.Role.valueOf(userInfo[3].toUpperCase());
                 } else {
                     notification.addError(String.format(WRONG_FORMAT_ON_CSV_LINE.label, lineNumber), 
                         new TutorException(INVALID_CSV_FILE_FORMAT));
@@ -193,7 +199,8 @@ public class UserService {
 
                 ExternalUserDto userDto = new ExternalUserDto();
                 userDto.setEmail(userInfo[0]);
-                userDto.setName(userInfo[1]);
+                userDto.setUsername(userInfo[1]);
+                userDto.setName(userInfo[2]);
                 userDto.setRole(auxRole);
                 userDtos.add(userDto);
                 lineNumber++;
@@ -216,7 +223,7 @@ public class UserService {
         AuthExternalUser authUser = getOrCreateUser(externalUserDto);
 
         if (authUser.getUser().getCourseExecutions().contains(courseExecution)) {
-            throw new TutorException(DUPLICATE_USER, authUser.getEmail());
+            throw new TutorException(DUPLICATE_USER, authUser.getUsername());
         }
 
         authUser.getUser().addCourse(courseExecution);
@@ -272,10 +279,11 @@ public class UserService {
     }
 
     private AuthExternalUser getOrCreateUser(ExternalUserDto externalUserDto) {
-        return (AuthExternalUser) authUserRepository.findAuthUserByUsername(externalUserDto.getEmail())
+        String username = externalUserDto.getUsername() != null ? externalUserDto.getUsername() : externalUserDto.getEmail();
+        return (AuthExternalUser) authUserRepository.findAuthUserByUsername(username)
                 .orElseGet(() -> {
                     User user = new User(externalUserDto.getName(),
-                            externalUserDto.getEmail(), externalUserDto.getEmail(),
+                            username, externalUserDto.getEmail(),
                             externalUserDto.getRole(), false, AuthUser.Type.EXTERNAL);
                     userRepository.save(user);
                     return user.getAuthUser();

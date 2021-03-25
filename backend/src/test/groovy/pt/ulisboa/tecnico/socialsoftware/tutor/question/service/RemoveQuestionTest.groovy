@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
 class RemoveQuestionTest extends SpockTest {
     def question
     def optionOK
+    def optionOK2
     def optionKO
     def teacher
 
@@ -49,6 +50,7 @@ class RemoveQuestionTest extends SpockTest {
         optionOK.setContent(OPTION_1_CONTENT)
         optionOK.setCorrect(true)
         optionOK.setSequence(0)
+        optionOK.setPriority(1)
         optionOK.setQuestionDetails(questionDetails)
         optionRepository.save(optionOK)
 
@@ -59,6 +61,8 @@ class RemoveQuestionTest extends SpockTest {
         optionKO.setQuestionDetails(questionDetails)
         optionRepository.save(optionKO)
     }
+
+
 
     def "remove a question"() {
         when:
@@ -72,6 +76,99 @@ class RemoveQuestionTest extends SpockTest {
 
     def "remove a question used in a quiz"() {
         given: "a question with answers"
+        Quiz quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setTitle(QUIZ_TITLE)
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
+        quiz.setAvailableDate(LOCAL_DATE_BEFORE)
+        quiz.setCourseExecution(externalCourseExecution)
+        quiz.setOneWay(true)
+        quizRepository.save(quiz)
+
+        QuizQuestion quizQuestion= new QuizQuestion()
+        quizQuestion.setQuiz(quiz)
+        quizQuestion.setQuestion(question)
+        quizQuestionRepository.save(quizQuestion)
+
+        when:
+        questionService.removeQuestion(question.getId())
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.QUESTION_IS_USED_IN_QUIZ
+    }
+
+    def "remove a question with multiple answers"() {
+        given:"a question with 2 answers"
+        questionService.removeQuestion(question.getId())
+        def image = new Image()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        imageRepository.save(image)
+
+        question = new Question()
+        question.setKey(1)
+        question.setTitle(QUESTION_1_TITLE)
+        question.setContent(QUESTION_1_CONTENT)
+        question.setStatus(Question.Status.AVAILABLE)
+        question.setNumberOfAnswers(3)
+        question.setNumberOfCorrect(2)
+        question.setCourse(externalCourse)
+        question.setImage(image)
+        def questionDetails = new MultipleChoiceQuestion()
+        question.setQuestionDetails(questionDetails)
+        imageRepository.save(image)
+        questionRepository.save(question)
+        optionOK2 = new Option()
+        optionOK2.setContent(OPTION_1_CONTENT)
+        optionOK2.setCorrect(true)
+        optionOK2.setSequence(0)
+        optionOK2.setPriority(1)
+        optionOK2.setQuestionDetails(questionDetails)
+
+        optionRepository.save(optionOK2)
+
+        when:
+        questionService.removeQuestion(question.getId())
+
+        then: "the question is removeQuestion"
+        questionRepository.count() == 0L
+        imageRepository.count() == 0L
+        optionRepository.count() == 0L
+    }
+
+
+    def "remove a question with 2 answers used in a quiz"() {
+        given: "a question with 2 answers with answers"
+
+        questionService.removeQuestion(question.getId())
+        def image = new Image()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        imageRepository.save(image)
+
+        question = new Question()
+        question.setKey(1)
+        question.setTitle(QUESTION_1_TITLE)
+        question.setContent(QUESTION_1_CONTENT)
+        question.setStatus(Question.Status.AVAILABLE)
+        question.setNumberOfAnswers(3)
+        question.setNumberOfCorrect(2)
+        question.setCourse(externalCourse)
+        question.setImage(image)
+        def questionDetails = new MultipleChoiceQuestion()
+        question.setQuestionDetails(questionDetails)
+        imageRepository.save(image)
+        questionRepository.save(question)
+        optionOK2 = new Option()
+        optionOK2.setContent(OPTION_1_CONTENT)
+        optionOK2.setCorrect(true)
+        optionOK2.setSequence(0)
+        optionOK2.setPriority(1)
+        optionOK2.setQuestionDetails(questionDetails)
+
+        optionRepository.save(optionOK2)
+
         Quiz quiz = new Quiz()
         quiz.setKey(1)
         quiz.setTitle(QUIZ_TITLE)

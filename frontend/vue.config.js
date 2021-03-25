@@ -74,24 +74,25 @@ module.exports = {
   transpileDependencies: ['vuetify'],
   configureWebpack: {
     plugins: [
+      // README: Commented because removed relevant css
       // https://github.com/FullHuman/purgecss/issues/67
-      isProductionEnvFlag
-        ? new PurgecssPlugin({
-            paths: glob.sync(
-              [
-                path.join(__dirname, './public/index.html'),
-                path.join(__dirname, './**/*.vue'),
-                path.join(__dirname, './src/**/*.js'),
-                path.join(__dirname, './node_modules/vuetify/src/**/*.ts'),
-                path.join(
-                  __dirname,
-                  './node_modules/vue-ctk-date-time-picker/**/*.js'
-                )
-              ],
-              { nodir: true }
-            )
-          })
-        : () => {},
+      // isProductionEnvFlag
+      //   ? new PurgecssPlugin({
+      //       paths: glob.sync(
+      //         [
+      //           path.join(__dirname, './public/index.html'),
+      //           path.join(__dirname, './**/*.vue'),
+      //           path.join(__dirname, './src/**/*.js'),
+      //           path.join(__dirname, './node_modules/vuetify/src/**/*.ts'),
+      //           path.join(
+      //             __dirname,
+      //             './node_modules/vue-ctk-date-time-picker/**/*.js'
+      //           )
+      //         ],
+      //         { nodir: true }
+      //       )
+      //     })
+      //   : () => {},
       isProductionEnvFlag ? new CompressionPlugin() : () => {},
       isProductionEnvFlag ? new TerserPlugin() : () => {}
     ]

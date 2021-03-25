@@ -1,29 +1,24 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.AnswerDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceCorrectAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.Updator;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.MultipleChoiceQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceStatementAnswerDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceStatementQuestionDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementAnswerDetailsDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementQuestionDetailsDto;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION)
 public class MultipleChoiceQuestion extends QuestionDetails {
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionDetails", fetch = FetchType.EAGER, orphanRemoval = true)
     private final List<Option> options = new ArrayList<>();
 
@@ -42,7 +37,7 @@ public class MultipleChoiceQuestion extends QuestionDetails {
     }
 
     public void setOptions(List<OptionDto> options) {
-        if (options.stream().filter(OptionDto::isCorrect).count() != 1) {
+        if (options.stream().filter(OptionDto::isCorrect).count() < 1) {
             throw new TutorException(ONE_CORRECT_OPTION_NEEDED);
         }
 
@@ -69,6 +64,7 @@ public class MultipleChoiceQuestion extends QuestionDetails {
     }
 
     public Integer getCorrectOptionId() {
+        //verificar situao mais que uma correcta integer
         return this.getOptions().stream()
                 .filter(Option::isCorrect)
                 .findAny()
@@ -154,4 +150,13 @@ public class MultipleChoiceQuestion extends QuestionDetails {
         return correctAnswer != null ? Character.toString('A' + correctAnswer) : "-";
     }
 
+    @Override
+    public String getAnswerRepresentation(List<Integer> selectedIds) {
+        var result = this.options
+                .stream()
+                .filter(x -> selectedIds.contains(x.getId()))
+                .map(x -> convertSequenceToLetter(x.getSequence()))
+                .collect(Collectors.joining("|"));
+        return !result.isEmpty() ? result : "-";
+    }
 }
