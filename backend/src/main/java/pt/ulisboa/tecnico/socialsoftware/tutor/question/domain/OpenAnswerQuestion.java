@@ -19,7 +19,8 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.OPEN_ANSWER_QUESTION)
 public class OpenAnswerQuestion extends QuestionDetails {
-
+    // @Column(columnDefinition = "TEXT", nullable = false)
+    // without this answers can only have 255 characters by default.
     private String correctAnswer;
     private String expression;
 
