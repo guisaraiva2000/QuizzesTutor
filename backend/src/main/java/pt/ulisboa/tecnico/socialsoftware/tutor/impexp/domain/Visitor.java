@@ -51,6 +51,8 @@ public interface Visitor {
 
     default void visitQuestionDetails(CodeFillInQuestion question) {}
 
+    default void visitQuestionDetails(OpenAnswerQuestion question) {}
+
     default void visitFillInSpot(CodeFillInSpot spot) {}
 
     default void visitFillInOption(CodeFillInOption spot) {}
