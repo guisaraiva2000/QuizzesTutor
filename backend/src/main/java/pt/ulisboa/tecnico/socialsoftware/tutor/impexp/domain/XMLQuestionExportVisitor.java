@@ -8,8 +8,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class XMLQuestionExportVisitor implements Visitor {
+    public static final String CONTENT = "content";
+    public static final String SEQUENCE = "sequence";
     private Element rootElement;
     private Element currentElement;
 
@@ -33,18 +37,29 @@ public class XMLQuestionExportVisitor implements Visitor {
     }
 
     private void exportQuestions(List<Question> questions) {
-        for (Question question : questions) {
-            question.accept(this);
+        Map<Course, List<Question>> questionMap = questions.stream().collect(Collectors.groupingBy(Question::getCourse));
+
+        for (var courseQuestions : questionMap.entrySet()) {
+            Element courseElement = new Element("course");
+            courseElement.setAttribute("courseType", courseQuestions.getKey().getType().name());
+            courseElement.setAttribute("courseName", courseQuestions.getKey().getName());
+
+            this.currentElement.addContent(courseElement);
+            this.currentElement = courseElement;
+
+            for (Question question : courseQuestions.getValue()) {
+                question.accept(this);
+            }
+
+            this.currentElement = this.rootElement;
         }
     }
 
     @Override
     public void visitQuestion(Question question) {
         Element questionElement = new Element("question");
-        questionElement.setAttribute("courseType", question.getCourse().getType().name());
-        questionElement.setAttribute("courseName", question.getCourse().getName());
         questionElement.setAttribute("key", String.valueOf(question.getKey()));
-        questionElement.setAttribute("content", question.getContent());
+        questionElement.setAttribute(CONTENT, question.getContent());
         questionElement.setAttribute("title", question.getTitle());
         questionElement.setAttribute("status", question.getStatus().name());
 
@@ -52,6 +67,7 @@ public class XMLQuestionExportVisitor implements Visitor {
             questionElement.setAttribute("creationDate", DateHandler.toISOString(question.getCreationDate()));
         this.currentElement.addContent(questionElement);
 
+        Element previousCurrent = this.currentElement;
         this.currentElement = questionElement;
 
         if (question.getImage() != null)
@@ -59,7 +75,7 @@ public class XMLQuestionExportVisitor implements Visitor {
 
         question.getQuestionDetails().accept(this);
 
-        this.currentElement = this.rootElement;
+        this.currentElement = previousCurrent;
     }
 
     @Override
@@ -103,7 +119,7 @@ public class XMLQuestionExportVisitor implements Visitor {
     public void visitFillInSpot(CodeFillInSpot spot) {
         Element spotElement = new Element("fillInSpot");
 
-        spotElement.setAttribute("sequence", String.valueOf(spot.getSequence()));
+        spotElement.setAttribute(SEQUENCE, String.valueOf(spot.getSequence()));
         this.currentElement.addContent(spotElement);
         var oldElement = this.currentElement;
         this.currentElement = spotElement;
@@ -117,8 +133,8 @@ public class XMLQuestionExportVisitor implements Visitor {
     public void visitFillInOption(CodeFillInOption option) {
         Element optionElement = new Element("fillInOption");
 
-        optionElement.setAttribute("sequence", String.valueOf(option.getSequence()));
-        optionElement.setAttribute("content", option.getContent());
+        optionElement.setAttribute(SEQUENCE, String.valueOf(option.getSequence()));
+        optionElement.setAttribute(CONTENT, option.getContent());
         optionElement.setAttribute("correct", String.valueOf(option.isCorrect()));
 
         this.currentElement.addContent(optionElement);
@@ -139,9 +155,9 @@ public class XMLQuestionExportVisitor implements Visitor {
     public void visitOption(Option option) {
         Element optionElement = new Element("option");
 
-        optionElement.setAttribute("priority", String.valueOf(option.getPriority()));
-        optionElement.setAttribute("sequence", String.valueOf(option.getSequence()));
-        optionElement.setAttribute("content", option.getContent());
+        optionElement.setAttribute(SEQUENCE, String.valueOf(option.getSequence()));
+        optionElement.setAttribute(CONTENT, option.getContent());
+
         optionElement.setAttribute("correct", String.valueOf(option.isCorrect()));
 
         this.currentElement.addContent(optionElement);
@@ -164,7 +180,7 @@ public class XMLQuestionExportVisitor implements Visitor {
         Element spotElement = new Element("slot");
 
         spotElement.setAttribute("order", String.valueOf(codeOrderSlot.getOrder()));
-        spotElement.setAttribute("sequence", String.valueOf(codeOrderSlot.getSequence()));
+        spotElement.setAttribute(SEQUENCE, String.valueOf(codeOrderSlot.getSequence()));
         spotElement.addContent(codeOrderSlot.getContent());
         this.currentElement.addContent(spotElement);
     }
