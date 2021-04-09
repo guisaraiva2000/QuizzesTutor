@@ -6,12 +6,12 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeFillInQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CodeOrderQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.*
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*
 import spock.lang.Unroll
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 
 @DataJpaTest
 class CreateQuestionTest extends SpockTest {
@@ -200,7 +200,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_ONE_OPTION_NEEDED
+        exception.getErrorMessage() == AT_LEAST_ONE_OPTION_NEEDED
     }
 
     def "cannot create a code fill in question with fillin spots without options"() {
@@ -221,7 +221,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
     }
 
     def "cannot create a code fill in question with fillin spots without correct options"() {
@@ -245,7 +245,119 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        exception.getErrorMessage() == NO_CORRECT_OPTION
+    }
+
+    def "create an open answer question with correct answer"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+
+    }
+
+    def "create an open answer question with a matching Java regex expression"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_EXPRESSION)
+
+        when:
+        def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct data is sent back"
+        rawResult instanceof QuestionDto
+        def result = (QuestionDto) rawResult
+        result.getId() != null
+        result.getStatus() == Question.Status.AVAILABLE.toString()
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getQuestionDetailsDto().getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        result.getQuestionDetailsDto().getExpression().toString() == OPEN_QUESTION_1_EXPRESSION
+
+        result.getImage() == null
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def repoResult = questionRepository.findAll().get(0)
+        repoResult.getId() != null
+        repoResult.getKey() == 1
+        repoResult.getStatus() == Question.Status.AVAILABLE
+        repoResult.getTitle() == QUESTION_1_TITLE
+        repoResult.getContent() == QUESTION_1_CONTENT
+        repoResult.getImage() == null
+        repoResult.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(repoResult)
+        def repoQuestion = (OpenAnswerQuestion) repoResult.getQuestionDetails()
+        repoQuestion.getCorrectAnswer() == OPEN_QUESTION_1_ANSWER
+        repoQuestion.getExpression().toString() == OPEN_QUESTION_1_EXPRESSION
+    }
+
+
+
+    @Unroll("invalid arguments: #correctAnswer | #expression || #errorMessage")
+    def "invalid input values"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new OpenAnswerQuestionDto())
+        questionDto.getQuestionDetailsDto().setCorrectAnswer(correctAnswer)
+        questionDto.getQuestionDetailsDto().setExpression(expression)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == errorMessage
+
+        where:
+        correctAnswer           | expression                           || errorMessage
+        null                    | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        ""                      | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        "         "             | OPEN_QUESTION_1_EXPRESSION           || NO_CORRECT_ANSWER
+        OPEN_QUESTION_1_ANSWER  | OPEN_QUESTION_1_MISMATCH_EXPRESSION  || EXPRESSION_NEEDS_TO_MATCH_ANSWER
+        OPEN_QUESTION_1_ANSWER  | "["                                  || INVALID_EXPRESSION
+        OPEN_QUESTION_1_ANSWER  | "          "                         || EXPRESSION_WITH_SPACES_ONLY
     }
 
 
@@ -329,7 +441,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
     }
 
     def "cannot create a code order question without 3 CodeOrderSlots"() {
@@ -360,7 +472,7 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
     }
 
     def "cannot create a code order question without 3 CodeOrderSlots with order"() {
@@ -396,7 +508,247 @@ class CreateQuestionTest extends SpockTest {
 
         then: "exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.AT_LEAST_THREE_SLOTS_NEEDED
+        exception.getErrorMessage() == AT_LEAST_THREE_SLOTS_NEEDED
+    }
+
+// Multiple choice more than 1 right
+    def "create a multiple choice question with no image and one option and two right choices"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+        and: 'a optionId'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def optionDto2 = new OptionDto()
+        optionDto2.setContent(OPTION_1_CONTENT)
+        optionDto2.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        options.add(optionDto2)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct question is inside the repository and two right choices"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getImage() == null
+        result.getQuestionDetails().getOptions().size() == 2
+        result.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(result)
+        def resOption = result.getQuestionDetails().getOptions().get(0)
+        resOption.getContent() == OPTION_1_CONTENT
+        //resOption.getContent() == OPTION_2_CONTENT
+        resOption.isCorrect()
+
+    }
+
+    def "create a multiple choice question with image and two options and two right choices"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+
+        and: 'an image'
+        def image = new ImageDto()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        questionDto.setImage(image)
+        and: 'two options'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getImage().getId() != null
+        result.getImage().getUrl() == IMAGE_1_URL
+        result.getImage().getWidth() == 20
+        result.getQuestionDetails().getOptions().size() == 3
+    }
+
+    def "create two multiple choice questions with 2 correct answers"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+        and: 'a optionId'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when: 'are created two questions'
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+        questionDto.setKey(null)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the two questions are created with the correct numbers"
+        questionRepository.count() == 2L
+        def resultOne = questionRepository.findAll().get(0)
+        def resultTwo = questionRepository.findAll().get(1)
+        resultOne.getKey() + resultTwo.getKey() == 3
+    }
+
+// Multiple choice more than 1 right
+    def "create a multiple choice question with no image and one option and two right choices"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+        and: 'a optionId'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def optionDto2 = new OptionDto()
+        optionDto2.setContent(OPTION_1_CONTENT)
+        optionDto2.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        options.add(optionDto2)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct question is inside the repository and two right choices"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getImage() == null
+        result.getQuestionDetails().getOptions().size() == 2
+        result.getCourse().getName() == COURSE_1_NAME
+        externalCourse.getQuestions().contains(result)
+        def resOption = result.getQuestionDetails().getOptions().get(0)
+        resOption.getContent() == OPTION_1_CONTENT
+        //resOption.getContent() == OPTION_2_CONTENT
+        resOption.isCorrect()
+
+    }
+
+    def "create a multiple choice question with image and two options and two right choices"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+
+        and: 'an image'
+        def image = new ImageDto()
+        image.setUrl(IMAGE_1_URL)
+        image.setWidth(20)
+        questionDto.setImage(image)
+        and: 'two options'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when:
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the correct question is inside the repository"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_1_TITLE
+        result.getContent() == QUESTION_1_CONTENT
+        result.getImage().getId() != null
+        result.getImage().getUrl() == IMAGE_1_URL
+        result.getImage().getWidth() == 20
+        result.getQuestionDetails().getOptions().size() == 3
+    }
+
+    def "create two multiple choice questions with 2 correct answers"() {
+        given: "a questionDto"
+        def questionDto = new QuestionDto()
+        questionDto.setTitle(QUESTION_1_TITLE)
+        questionDto.setContent(QUESTION_1_CONTENT)
+        questionDto.setStatus(Question.Status.AVAILABLE.name())
+        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
+        and: 'a optionId'
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_1_CONTENT)
+        optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
+        options.add(optionDto)
+        questionDto.getQuestionDetailsDto().setOptions(options)
+
+        when: 'are created two questions'
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+        questionDto.setKey(null)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
+
+        then: "the two questions are created with the correct numbers"
+        questionRepository.count() == 2L
+        def resultOne = questionRepository.findAll().get(0)
+        def resultTwo = questionRepository.findAll().get(1)
+        resultOne.getKey() + resultTwo.getKey() == 3
     }
 
 
@@ -408,9 +760,10 @@ class CreateQuestionTest extends SpockTest {
         questionService.createQuestion(nonExistentId, questionDto)
         then:
         def exception = thrown(TutorException)
-        exception.errorMessage == ErrorMessage.COURSE_NOT_FOUND
+        exception.errorMessage == COURSE_NOT_FOUND
         where:
         nonExistentId << [-1, 0, 200]
+
     }
 
     @TestConfiguration
