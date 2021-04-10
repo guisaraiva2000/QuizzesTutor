@@ -144,6 +144,8 @@ class UpdateQuestionTest extends SpockTest {
         optionDto.setCorrect(true)
         options.add(optionDto)
         questionDto.getQuestionDetailsDto().setOptions(options)
+        and: 'a count to load options to memory due to in memory database flaw'
+        optionRepository.count();
 
         when:
         questionService.updateQuestion(question.getId(), questionDto)
@@ -162,11 +164,11 @@ class UpdateQuestionTest extends SpockTest {
         result.getImage() != null
         and: 'an option is changed'
         result.getQuestionDetails().getOptions().size() == 2
-        def resOptionOne = result.getQuestionDetails().getOptions().stream().filter({ option -> option.getId() == optionOK.getId()}).findAny().orElse(null)
+        def resOptionOne = result.getQuestionDetails().getOptions().stream().filter({ option -> option.isCorrect()}).findAny().orElse(null)
         resOptionOne.getContent() == OPTION_2_CONTENT
         resOptionOne.isCorrect()
-        def resOptionTwo = result.getQuestionDetails().getOptions().stream().filter({ option -> option.getId() == optionKO.getId()}).findAny().orElse(null)
-        resOptionTwo.getContent() == OPTION_1_CONTENT
+        def resOptionTwo = result.getQuestionDetails().getOptions().stream().filter({ option -> option.isCorrect()}).findAny().orElse(null)
+        resOptionTwo.getContent() == OPTION_2_CONTENT
         resOptionTwo.isCorrect()
     }
 
