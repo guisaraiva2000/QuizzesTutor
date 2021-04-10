@@ -172,35 +172,6 @@ class UpdateQuestionTest extends SpockTest {
         resOptionTwo.isCorrect()
     }
 
-    /*def "update question with two options true and update number of rights"() {
-        given: 'a question'
-        def questionDto = new QuestionDto(question)
-        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
-        questionDto.setNumberOfCorrect(2)
-
-        def optionDto = new OptionDto(optionOK)
-        optionDto.setContent(OPTION_2_CONTENT)
-        optionDto.setCorrect(true)
-        def options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-        optionDto = new OptionDto(optionKO)
-        optionDto.setContent(OPTION_2_CONTENT)
-        optionDto.setCorrect(true)
-        options.add(optionDto)
-        questionDto.getQuestionDetailsDto().setOptions(options)
-
-        when:
-        questionService.updateQuestion(question.getId(), questionDto)
-
-        then: "the question as 2 right answers"
-        def resOptionOne = result.getQuestionDetails().getOptions().stream().filter({ option -> option.getId() == optionOK.getId()}).findAny().orElse(null)
-        resOptionOne.getContent() == OPTION_2_CONTENT
-        resOptionOne.isCorrect()
-        def resOptionTwo = result.getQuestionDetails().getOptions().stream().filter({ option -> option.getId() == optionKO.getId()}).findAny().orElse(null)
-        resOptionTwo.getContent() == OPTION_1_CONTENT
-        resOptionTwo.isCorrect()
-    }*/
-
     def "update correct option in a question with answers"() {
         given: "a question with answers"
         Quiz quiz = new Quiz()
