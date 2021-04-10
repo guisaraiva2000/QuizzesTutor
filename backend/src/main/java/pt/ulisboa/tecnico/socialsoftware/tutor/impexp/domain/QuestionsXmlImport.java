@@ -26,6 +26,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 public class QuestionsXmlImport {
     public static final String CONTENT = "content";
+    public static final String PRIORITY = "priority";
     public static final String SEQUENCE = "sequence";
     private QuestionService questionService;
     private CourseRepository courseRepository;
@@ -157,6 +158,7 @@ public class QuestionsXmlImport {
         List<OptionDto> optionDtos = new ArrayList<>();
         for (Element optionElement : questionElement.getChild("options").getChildren("option")) {
             Integer optionSequence = Integer.valueOf(optionElement.getAttributeValue(SEQUENCE));
+            Integer optionPriority = Integer.valueOf(optionElement.getAttributeValue(PRIORITY));
             String optionContent = optionElement.getAttributeValue(CONTENT);
 
             boolean correct = Boolean.parseBoolean(optionElement.getAttributeValue("correct"));

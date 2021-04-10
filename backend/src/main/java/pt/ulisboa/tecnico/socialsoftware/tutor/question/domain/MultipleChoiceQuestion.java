@@ -37,7 +37,7 @@ public class MultipleChoiceQuestion extends QuestionDetails {
     }
 
     public void setOptions(List<OptionDto> optionDtos) {
-        if (optionDtos.stream().filter(OptionDto::isCorrect).count() != 1) {
+        if (optionDtos.stream().filter(OptionDto::isCorrect).count() < 1) {
 
             throw new TutorException(ONE_CORRECT_OPTION_NEEDED);
         }

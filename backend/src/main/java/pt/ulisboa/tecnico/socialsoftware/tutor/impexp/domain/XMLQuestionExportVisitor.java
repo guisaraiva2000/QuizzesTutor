@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class XMLQuestionExportVisitor implements Visitor {
     public static final String CONTENT = "content";
+    public static final String PRIORITY = "priority";
     public static final String SEQUENCE = "sequence";
     private Element rootElement;
     private Element currentElement;
@@ -155,6 +156,7 @@ public class XMLQuestionExportVisitor implements Visitor {
     public void visitOption(Option option) {
         Element optionElement = new Element("option");
 
+        optionElement.setAttribute(PRIORITY, String.valueOf(option.getPriority()));
         optionElement.setAttribute(SEQUENCE, String.valueOf(option.getSequence()));
         optionElement.setAttribute(CONTENT, option.getContent());
 
