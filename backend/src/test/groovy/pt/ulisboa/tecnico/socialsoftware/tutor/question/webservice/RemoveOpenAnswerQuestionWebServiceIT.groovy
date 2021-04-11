@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.webservice
 
+import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
+import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
@@ -50,8 +52,6 @@ class RemoveOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         questionService.createQuestion(externalCourseExecution.getId(), questionDto)
         question = questionRepository.findAll().get(0)
-
-
     }
 
     def "teacher removes open answer question"() {
@@ -73,23 +73,15 @@ class RemoveOpenAnswerQuestionWebServiceIT extends SpockTest {
         given: 'a student login'
         createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
 
-        and: 'prepare request response'
-        restClient.handler.failure = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-        restClient.handler.success = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-
         when:
-        def map = restClient.delete(
+        response = restClient.delete(
                 path: '/questions/' + question.getId(),
                 requestContentType: 'application/json'
         )
 
-        then: "check the response status"
-        assert map['response'].status == 403
-        assert map['reader'] != null
+        then: "the request returns 403"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
     }
 
     def cleanup() {
