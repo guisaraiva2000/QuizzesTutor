@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDetailsDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OpenAnswerQuestionDto;
 
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.List;
@@ -20,6 +21,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @DiscriminatorValue(Question.QuestionTypes.OPEN_ANSWER_QUESTION)
 public class OpenAnswerQuestion extends QuestionDetails {
 
+    @Column(columnDefinition = "TEXT")
     private String correctAnswer;
     private String expression;
 
