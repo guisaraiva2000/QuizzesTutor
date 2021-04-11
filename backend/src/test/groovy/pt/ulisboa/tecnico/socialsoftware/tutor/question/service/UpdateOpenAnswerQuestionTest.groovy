@@ -21,6 +21,8 @@ class UpdateOpenAnswerQuestionTest extends SpockTest {
     def question
 
     def setup() {
+        createExternalCourseAndExecution()
+
         def image = new Image()
         image.setUrl(IMAGE_1_URL)
         image.setWidth(20)
