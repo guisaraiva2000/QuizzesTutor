@@ -60,7 +60,7 @@ class UpdateMultipleChoiceQuestionWebServiceIT extends SpockTest{
         questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
         questionDto.getQuestionDetailsDto().setOptions(options)
 
-        questionService.createQuestion(externalCourseExecution.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
 
     }

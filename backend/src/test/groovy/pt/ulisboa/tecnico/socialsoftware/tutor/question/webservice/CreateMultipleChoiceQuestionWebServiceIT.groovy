@@ -45,13 +45,13 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
         courseExecutionRepository.save(courseExecution)
 
         teacher = new User(USER_1_NAME, USER_1_EMAIL, USER_1_EMAIL,
-                User.Role.TEACHER, false, AuthUser.Type.EXTERNAL)
+                User.Role.TEACHER, false, AuthUser.Type.TECNICO)
         teacher.authUser.setPassword(passwordEncoder.encode(USER_1_PASSWORD))
         teacher.addCourse(courseExecution)
         courseExecution.addUser(teacher)
         userRepository.save(teacher)
         student = new User(USER_2_NAME, USER_2_EMAIL, USER_2_EMAIL,
-                User.Role.STUDENT, false, AuthUser.Type.EXTERNAL)
+                User.Role.STUDENT, false, AuthUser.Type.TECNICO)
         student.authUser.setPassword(passwordEncoder.encode(USER_2_PASSWORD))
         student.addCourse(courseExecution)
         courseExecution.addUser(student)
