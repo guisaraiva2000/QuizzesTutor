@@ -50,7 +50,7 @@ class ExportOpenAnswerQuestionWebServiceIT extends SpockTest {
         questionDetailsDto.setExpression(OPEN_QUESTION_1_EXPRESSION)
         questionDto.setQuestionDetailsDto(questionDetailsDto)
 
-        questionService.createQuestion(externalCourseExecution.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
     }
 
@@ -68,7 +68,7 @@ class ExportOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when: "the web service is invoked"
         def map = restClient.get(
-                path: "/courses/" + externalCourseExecution.getId() + "/questions/export",
+                path: "/courses/" + externalCourse.getId() + "/questions/export",
                 requestContentType: "application/json"
         )
 

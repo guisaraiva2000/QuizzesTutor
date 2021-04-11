@@ -50,7 +50,7 @@ class RemoveOpenAnswerQuestionWebServiceIT extends SpockTest {
         questionDetailsDto.setExpression(OPEN_QUESTION_1_EXPRESSION)
         questionDto.setQuestionDetailsDto(questionDetailsDto)
 
-        questionService.createQuestion(externalCourseExecution.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
     }
 
