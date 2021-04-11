@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.webservice
 
 import groovyx.net.http.RESTClient
+import groovyx.net.http.HttpResponseException
+import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
@@ -60,7 +62,7 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
         questionDto.getQuestionDetailsDto().setOptions(options)
 
-        questionService.createQuestion(externalCourseExecution.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
     }
 
@@ -91,23 +93,15 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         given: 'a student login'
         createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
 
-        and: 'prepare request response'
-        restClient.handler.failure = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-        restClient.handler.success = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-
         when: "the web service is invoked"
-        def map = restClient.get(
-                path: "/courses/" + externalCourseExecution.getId() + "/questions/export",
+        response = restClient.get(
+                path: "/courses/" + externalCourse.getId() + "/questions/export",
                 requestContentType: "application/json"
         )
 
-        then: "the response status is KO"
-        assert map['response'].status == 403
-        assert map['reader'] != null
+        then: "the request returns 403"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
     }
 
     def cleanup() {

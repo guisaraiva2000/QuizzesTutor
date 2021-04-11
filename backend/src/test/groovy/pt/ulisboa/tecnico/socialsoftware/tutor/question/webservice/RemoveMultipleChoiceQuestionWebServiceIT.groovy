@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.webservice
 
 import groovyx.net.http.RESTClient
+import groovyx.net.http.HttpResponseException
+import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
@@ -60,7 +62,7 @@ class RemoveMultipleChoiceQuestionWebServiceIT extends SpockTest {
         questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
         questionDto.getQuestionDetailsDto().setOptions(options)
 
-        questionService.createQuestion(externalCourseExecution.getId(), questionDto)
+        questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
 
     }
@@ -84,23 +86,15 @@ class RemoveMultipleChoiceQuestionWebServiceIT extends SpockTest {
         given: 'a student login'
         createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
 
-        and: 'prepare request response'
-        restClient.handler.failure = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-        restClient.handler.success = { resp, reader ->
-            [response:resp, reader:reader]
-        }
-
         when:
-        def map = restClient.delete(
+        response = restClient.delete(
                 path: '/questions/' + question.getId(),
                 requestContentType: 'application/json'
         )
 
-        then: "check the response status"
-        assert map['response'].status == 403
-        assert map['reader'] != null
+        then: "the request returns 403"
+        def error = thrown(HttpResponseException)
+        error.response.status == HttpStatus.SC_FORBIDDEN
     }
 
     def cleanup() {
