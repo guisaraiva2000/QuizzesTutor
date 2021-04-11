@@ -83,7 +83,7 @@ class ExportOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when: "the web service is invoked"
         response = restClient.get(
-                path: "/courses/" + externalCourseExecution.getId() + "/questions/export",
+                path: "/courses/" + externalCourse.getId() + "/questions/export",
                 requestContentType: "application/json"
         )
 
