@@ -15,6 +15,9 @@ import spock.lang.Unroll
 
 @DataJpaTest
 class CreateQuestionTest extends SpockTest {
+    def setup() {
+        createExternalCourseAndExecution()
+    }
 
     def "create a multiple choice question with no image and one option"() {
         given: "a questionDto"
