@@ -94,4 +94,20 @@ describe('Manage Open Answer Questions Walk-through', () => {
             'Cypress Question Example - Correct Answer - 01'
         );
     });
+
+    it('Can view question (with button)', function () {
+        cy.get('tbody tr')
+            .first()
+            .within(($list) => {
+                cy.get('button').contains('visibility').click();
+            });
+
+        validateQuestion(
+            'Cypress Question Example - 01',
+            'Cypress Question Example - Content - 01',
+        'Cypress Question Example - Correct Answer - 01'
+        );
+
+        cy.get('button').contains('close').click();
+    });
 });
