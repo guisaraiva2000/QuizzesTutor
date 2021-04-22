@@ -185,4 +185,46 @@ describe('Manage Open Answer Questions Walk-through', () => {
         );
     });
 
+    it('Can duplicate question', function () {
+        cy.get('tbody tr')
+            .first()
+            .within(($list) => {
+                cy.get('button').contains('cached').click();
+            });
+
+        cy.get('[data-cy="createOrEditQuestionDialog"]')
+            .parent()
+            .should('be.visible');
+
+        cy.get('span.headline').should('contain', 'New Question');
+
+        cy.get('[data-cy="questionTitleTextArea"]')
+            .should('have.value', 'Cypress Question Example - 01 - Edited')
+            .type('{end} - DUP', { force: true });
+        cy.get('[data-cy="questionQuestionTextArea"]').should(
+            'have.value',
+            'Cypress New Content For Question!'
+        );
+
+        cy.get('[data-cy="correctAnswerTextArea"]').should(
+            'have.value',
+            'Cypress Question Example - Correct Answer - 01'
+        );
+
+        cy.route('POST', '/courses/*/questions/').as('postQuestion');
+
+        cy.get('button').contains('Save').click();
+
+        cy.wait('@postQuestion').its('status').should('eq', 200);
+
+        cy.get('[data-cy="questionTitleGrid"]')
+            .first()
+            .should('contain', 'Cypress Question Example - 01 - Edited - DUP');
+
+        validateQuestionFull(
+            'Cypress Question Example - 01 - Edited - DUP',
+            'Cypress New Content For Question!',
+            'Cypress Question Example - Correct Answer - 01'
+        );
+    });
 });
