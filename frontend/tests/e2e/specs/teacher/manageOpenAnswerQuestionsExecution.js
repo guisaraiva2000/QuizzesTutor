@@ -227,4 +227,15 @@ describe('Manage Open Answer Questions Walk-through', () => {
             'Cypress Question Example - Correct Answer - 01'
         );
     });
+
+    it('Can delete created question', function () {
+        cy.route('DELETE', '/questions/*').as('deleteQuestion');
+        cy.get('tbody tr')
+            .first()
+            .within(($list) => {
+                cy.get('button').contains('delete').click();
+            });
+
+        cy.wait('@deleteQuestion').its('status').should('eq', 200);
+    });
 });
