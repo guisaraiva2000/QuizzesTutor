@@ -61,6 +61,8 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
 
     }
 
+/*
+
     def "teacher create multiple choice question"() {
         given: 'a teacher login'
         createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
@@ -147,6 +149,8 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
         assert map['response'].status == 403
 
     }
+
+*/
 
     def cleanup() {
         userRepository.deleteById(teacher.getId())

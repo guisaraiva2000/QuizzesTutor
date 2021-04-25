@@ -1,7 +1,8 @@
 <template>
   <div class="multiple-choice-options">
     <v-row>
-      <v-col cols="1" offset="10"> Correct </v-col>
+      <v-col cols="1" offset="9"> Correct </v-col>
+      <v-col cols="1"> Priority </v-col>
     </v-row>
 
     <v-row
@@ -9,7 +10,7 @@
       :key="index"
       data-cy="questionOptionsInput"
     >
-      <v-col cols="10">
+      <v-col cols="9">
         <v-textarea
           v-model="option.content"
           :label="`Option ${index + 1}`"
@@ -24,6 +25,15 @@
           inset
           :data-cy="`Switch${index + 1}`"
         />
+      </v-col>
+      <v-col cols="1">
+        <v-textarea
+          v-model="option.priority"
+          :label="`Priority`"
+          :data-cy="`Priority`"
+          rows="1"
+          auto-grow
+        ></v-textarea>
       </v-col>
       <v-col v-if="sQuestionDetails.options.length > 2">
         <v-tooltip bottom>
