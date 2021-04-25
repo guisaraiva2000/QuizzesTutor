@@ -65,7 +65,9 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         questionService.createQuestion(externalCourse.getId(), questionDto)
         question = questionRepository.findAll().get(0)
     }
+
 /*
+
     def "teacher exports a multiple choice question"() {
         given: 'a teacher login'
         createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
@@ -87,7 +89,9 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         then: "the response status is OK"
         assert map['response'].status == 200
         assert map['reader'] != null
+
     }*/
+
 
     def "student exports a multiple choice question"() {
         given: 'a student login'
