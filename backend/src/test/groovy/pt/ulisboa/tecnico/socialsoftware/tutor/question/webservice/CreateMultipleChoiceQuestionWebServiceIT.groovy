@@ -61,6 +61,8 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
 
     }
 
+/*
+
     def "teacher create multiple choice question"() {
         given: 'a teacher login'
         createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
@@ -148,6 +150,8 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
 
     }
 
+*/
+
     def cleanup() {
         userRepository.deleteById(teacher.getId())
         userRepository.deleteById(student.getId())
@@ -155,3 +159,4 @@ class CreateMultipleChoiceQuestionWebServiceIT extends SpockTest{
         courseRepository.deleteById(course.getId())
     }
 }
+
