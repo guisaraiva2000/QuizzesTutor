@@ -3,7 +3,6 @@ import MultipleChoiceQuestionDetails from '@/models/management/questions/Multipl
 import MultipleChoiceAnswerDetails from '@/models/management/questions/MultipleChoiceAnswerDetails';
 import CodeFillInQuestionDetails from '@/models/management/questions/CodeFillInQuestionDetails';
 import CodeFillInAnswerDetails from '@/models/management/questions/CodeFillInAnswerDetails';
-import OpenAnswerQuestionDetails from '@/models/management/questions/OpenAnswerQuestionDetails';
 
 import AnswerDetails from '@/models/management/questions/AnswerDetails';
 import StatementQuestionDetails from '@/models/statement/questions/StatementQuestionDetails';
@@ -25,7 +24,6 @@ export enum QuestionTypes {
   MultipleChoice = 'multiple_choice',
   CodeFillIn = 'code_fill_in',
   CodeOrder = 'code_order',
-  OpenAnswer = 'open_answer',
 }
 
 export function convertToLetter(number: number | null) {
@@ -45,8 +43,6 @@ export abstract class QuestionFactory {
         return new CodeFillInQuestionFactory();
       case QuestionTypes.CodeOrder:
         return new CodeOrderQuestionFactory();
-      case QuestionTypes.OpenAnswer:
-        return new OpenAnswerQuestionFactory();
       default:
         throw new Error('Unknown question type.');
     }
@@ -130,28 +126,5 @@ class CodeOrderQuestionFactory extends QuestionFactory {
     details: any
   ): StatementCorrectAnswerDetails {
     return new CodeOrderStatementCorrectAnswerDetails(details);
-  }
-}
-
-class OpenAnswerQuestionFactory extends QuestionFactory {
-  createEmptyQuestionDetails(): QuestionDetails {
-    return new OpenAnswerQuestionDetails();
-  }
-  createQuestionDetails(details: any): QuestionDetails {
-    return new OpenAnswerQuestionDetails(details);
-  }
-  createAnswerDetails(question: any): AnswerDetails {
-    throw new Error('Method not implemented.');
-  }
-  createStatementQuestionDetails(question: any): StatementQuestionDetails {
-    throw new Error('Method not implemented.');
-  }
-  createStatementAnswerDetails(details: any): StatementAnswerDetails {
-    throw new Error('Method not implemented.');
-  }
-  createStatementCorrectAnswerDetails(
-    details: any
-  ): StatementCorrectAnswerDetails {
-    throw new Error('Method not implemented.');
   }
 }

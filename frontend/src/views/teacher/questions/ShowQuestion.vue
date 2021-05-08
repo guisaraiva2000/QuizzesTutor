@@ -19,7 +19,6 @@ import Image from '@/models/management/Image';
 import MultipleChoiceView from '@/components/multiple-choice/MultipleChoiceView.vue';
 import CodeFillInView from '@/components/code-fill-in/CodeFillInView.vue';
 import CodeOrderView from '@/components/code-order/CodeOrderView.vue';
-import OpenAnswerView from '@/components/open-answer/OpenAnswerView.vue';
 import AnswerDetails from '@/models/management/questions/AnswerDetails';
 
 @Component({
@@ -27,7 +26,6 @@ import AnswerDetails from '@/models/management/questions/AnswerDetails';
     multiple_choice: MultipleChoiceView,
     code_fill_in: CodeFillInView,
     code_order: CodeOrderView,
-    open_answer: OpenAnswerView,
   },
 })
 export default class ShowQuestion extends Vue {

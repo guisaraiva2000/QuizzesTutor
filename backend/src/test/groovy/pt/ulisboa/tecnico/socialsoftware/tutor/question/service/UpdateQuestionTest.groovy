@@ -129,47 +129,27 @@ class UpdateQuestionTest extends SpockTest {
     }
 
     def "update question with two options true"() {
-        given: "a changed question"
+        given: 'a question'
         def questionDto = new QuestionDto(question)
-        questionDto.setTitle(QUESTION_2_TITLE)
-        questionDto.setContent(QUESTION_2_CONTENT)
         questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
-        and: '2 changed options'
-        def options = new ArrayList<OptionDto>()
+
         def optionDto = new OptionDto(optionOK)
         optionDto.setContent(OPTION_2_CONTENT)
         optionDto.setCorrect(true)
+        def options = new ArrayList<OptionDto>()
         options.add(optionDto)
         optionDto = new OptionDto(optionKO)
+        optionDto.setContent(OPTION_2_CONTENT)
         optionDto.setCorrect(true)
         options.add(optionDto)
         questionDto.getQuestionDetailsDto().setOptions(options)
-        and: 'a count to load options to memory due to in memory database flaw'
-        optionRepository.count();
 
         when:
         questionService.updateQuestion(question.getId(), questionDto)
 
-        then: "the question is changed"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
-        result.getId() == question.getId()
-        result.getTitle() == QUESTION_2_TITLE
-        result.getContent() == QUESTION_2_CONTENT
-        and: 'are not changed'
-        result.getStatus() == Question.Status.AVAILABLE
-        result.getNumberOfAnswers() == 2
-        result.getNumberOfCorrect() == 1
-        result.getDifficulty() == 50
-        result.getImage() != null
-        and: 'an option is changed'
-        result.getQuestionDetails().getOptions().size() == 2
-        def resOptionOne = result.getQuestionDetails().getOptions().stream().filter({ option -> option.isCorrect()}).findAny().orElse(null)
-        resOptionOne.getContent() == OPTION_2_CONTENT
-        resOptionOne.isCorrect()
-        def resOptionTwo = result.getQuestionDetails().getOptions().stream().filter({ option -> option.isCorrect()}).findAny().orElse(null)
-        resOptionTwo.getContent() == OPTION_2_CONTENT
-        resOptionTwo.isCorrect()
+        then: "the question an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.ONE_CORRECT_OPTION_NEEDED
     }
 
     def "update correct option in a question with answers"() {
