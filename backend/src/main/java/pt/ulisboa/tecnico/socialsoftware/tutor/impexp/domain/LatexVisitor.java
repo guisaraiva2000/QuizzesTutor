@@ -51,16 +51,6 @@ public abstract class LatexVisitor implements Visitor {
     }
 
     @Override
-    public void visitQuestionDetails(OpenAnswerQuestion question) {
-
-        this.result = this.result + "\\putCorrectAnswer";
-
-        this.result = this.result + "% Answer: " + question.getCorrectAnswerRepresentation() + "\n";
-
-        this.result = this.result + "\\end{ClosedQuestion}\n}\n\n";
-    }
-
-    @Override
     public void visitQuestionDetails(MultipleChoiceQuestion question) {
         question.visitOptions(this);
 
