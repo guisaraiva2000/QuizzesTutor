@@ -107,6 +107,14 @@ public abstract class LatexVisitor implements Visitor {
     }
 
     @Override
+    public void visitQuestionDetails(OpenAnswerQuestion question) {
+
+        this.result = this.result + "% Answer: " + question.getCorrectAnswerRepresentation() + "\n";
+
+        this.result = this.result + "\\end{ClosedQuestion}\n}\n\n";
+    }
+
+    @Override
     public void visitImage(Image image) {
         String imageString = "\n\t\\begin{center}\n";
         imageString = imageString + "\t\t\\includegraphics[width=" + image.getWidth() + "cm]{" + image.getUrl() + "}\n";
