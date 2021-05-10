@@ -66,22 +66,22 @@ public class OpenAnswerQuestion extends QuestionDetails {
 
     @Override
     public CorrectAnswerDetailsDto getCorrectAnswerDetailsDto() {
-        return null;
+        return new OpenAnswerCorrectAnswerDto(this);
     }
 
     @Override
     public StatementQuestionDetailsDto getStatementQuestionDetailsDto() {
-        return null;
+        return new OpenAnswerStatementQuestionDetailsDto(this);
     }
 
     @Override
     public StatementAnswerDetailsDto getEmptyStatementAnswerDetailsDto() {
-        return null;
+        return new OpenAnswerStatementAnswerDetailsDto();
     }
 
     @Override
     public AnswerDetailsDto getEmptyAnswerDetailsDto() {
-        return null;
+        return new OpenAnswerDto();
     }
 
     @Override
