@@ -4,7 +4,10 @@
     <p class="open-answer-header text-left">Your Answer:</p>
     <v-card class="answer text-left" outlined tile>
       <div>
-        <span style="white-space: pre-line" v-html="answerDetails.answer" />
+        <span
+          data-cy="studentAnswer"
+          style="white-space: pre-line"
+          v-html="answerDetails.answer" />
       </div>
     </v-card>
     <p></p>
@@ -13,6 +16,7 @@
     <v-card class="open-answer-correct-answer text-left" outlined tile>
       <div>
         <span
+          data-cy="correctAnswer"
           style="white-space: pre-line"
           v-html="correctAnswerDetails.correctAnswer"
         />
