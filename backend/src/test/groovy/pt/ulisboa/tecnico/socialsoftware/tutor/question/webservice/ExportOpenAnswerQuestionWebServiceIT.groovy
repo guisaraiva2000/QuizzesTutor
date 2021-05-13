@@ -68,7 +68,7 @@ class ExportOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when: "the web service is invoked"
         def map = restClient.get(
-                path: "/courses/" + externalCourse.getId() + "/questions/export",
+                path: "/questions/courses/" + externalCourse.getId() + "/export",
                 requestContentType: "application/json"
         )
 
@@ -83,7 +83,7 @@ class ExportOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when: "the web service is invoked"
         response = restClient.get(
-                path: "/courses/" + externalCourse.getId() + "/questions/export",
+                path: "/questions/courses/" + externalCourse.getId() + "/export",
                 requestContentType: "application/json"
         )
 
