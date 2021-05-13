@@ -144,3 +144,11 @@ Cypress.Commands.add('cleanOpenAnswerQuestionsByName', questionName => {
                   , det AS (DELETE FROM question_details WHERE question_id in (SELECT question_id FROM toDelete))
                 DELETE FROM questions WHERE id IN (SELECT question_id FROM toDelete);`);
 });
+
+Cypress.Commands.add('cleanOpenAnswerQuizByName',  (quizName) => {
+  dbCommand(`DELETE FROM answer_details ad  USING question_answers qa WHERE ad.question_answer_id = qa.id;
+                      DELETE FROM question_answers qa USING quiz_questions qq WHERE qq.id = qa.quiz_question_id;
+                      DELETE FROM quiz_answers qa USING quizzes qz where qz.title like '%${quizName}%' and qa.quiz_id = qz.id;
+                      DELETE FROM quiz_questions qq USING quizzes qz where qz.title like '%${quizName}%' and qq.quiz_id = qz.id;
+                      DELETE FROM quizzes WHERE title like '%${quizName}%';`);
+});

@@ -33,7 +33,7 @@ public class OpenAnswer extends AnswerDetails {
     public void setAnswer(OpenAnswerQuestion question, OpenAnswerStatementAnswerDetailsDto openAnswerStatementAnswerDetailsDto) {
         if (openAnswerStatementAnswerDetailsDto.getAnswer() == null) {
             this.setAnswer(null);
-        } else /*if (question.getCorrectAnswer().equals(openAnswerStatementAnswerDetailsDto.getAnswer())) */{
+        } else {
             this.remove();
             this.setAnswer(openAnswerStatementAnswerDetailsDto.getAnswer());
         }
