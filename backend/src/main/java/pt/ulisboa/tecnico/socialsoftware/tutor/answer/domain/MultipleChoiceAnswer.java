@@ -56,12 +56,11 @@ public class MultipleChoiceAnswer extends AnswerDetails {
 
     public void setOption(MultipleChoiceQuestion question, MultipleChoiceStatementAnswerDetailsDto multipleChoiceStatementAnswerDetailsDto) {
         if (multipleChoiceStatementAnswerDetailsDto.getOptionId() != null) {
-            Option opt = question.getOptions().stream()
-                    .filter(option1 -> option1.getId().equals(multipleChoiceStatementAnswerDetailsDto.getOptionId()))
-                    .findAny()
-                    .orElseThrow(() -> new TutorException(QUESTION_OPTION_MISMATCH, multipleChoiceStatementAnswerDetailsDto.getOptionId()));
-
-            this.addOption(opt);
+            Option opt;
+            for (int i = 0; i < question.getOptions().size(); i++){
+                opt = question.getOptions().get(i);
+                this.addOption(opt);
+            }
         } else {
             this.setOption(null);
         }
