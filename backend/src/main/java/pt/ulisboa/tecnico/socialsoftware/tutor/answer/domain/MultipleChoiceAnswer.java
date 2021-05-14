@@ -12,6 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_OPTION_MISMATCH;
 
 @Entity
@@ -19,7 +22,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
 public class MultipleChoiceAnswer extends AnswerDetails {
     @ManyToOne
     @JoinColumn(name = "option_id")
-    private Option option;
+    private List<Option> option = new ArrayList<>();
 
     public MultipleChoiceAnswer() {
         super();
@@ -29,34 +32,35 @@ public class MultipleChoiceAnswer extends AnswerDetails {
         super(questionAnswer);
     }
 
-    public MultipleChoiceAnswer(QuestionAnswer questionAnswer, Option option){
+    public MultipleChoiceAnswer(QuestionAnswer questionAnswer, List<Option> option){
         super(questionAnswer);
         this.setOption(option);
     }
 
-    public Option getOption() {
+    public List<Option> getOption() {
         return option;
     }
 
-    public void setOption(Option option) {
+    public void setOption(List<Option> option) {
         this.option = option;
 
-        if (option != null)
-            option.addQuestionAnswer(this);
+        for (int i = 0; i < option.size(); i++){
+            if (option.get(i) != null)
+                option.get(i).addQuestionAnswer(this);
+        }   
+    }
+
+    public void addOption(Option option) {
+        this.option.add(option);
     }
 
     public void setOption(MultipleChoiceQuestion question, MultipleChoiceStatementAnswerDetailsDto multipleChoiceStatementAnswerDetailsDto) {
         if (multipleChoiceStatementAnswerDetailsDto.getOptionId() != null) {
-            Option opt = question.getOptions().stream()
-                    .filter(option1 -> option1.getId().equals(multipleChoiceStatementAnswerDetailsDto.getOptionId()))
-                    .findAny()
-                    .orElseThrow(() -> new TutorException(QUESTION_OPTION_MISMATCH, multipleChoiceStatementAnswerDetailsDto.getOptionId()));
-
-            if (this.getOption() != null) {
-                this.getOption().getQuestionAnswers().remove(this);
+            Option opt;
+            for (int i = 0; i < question.getOptions().size(); i++){
+                opt = question.getOptions().get(i);
+                this.addOption(opt);
             }
-
-            this.setOption(opt);
         } else {
             this.setOption(null);
         }
@@ -64,13 +68,19 @@ public class MultipleChoiceAnswer extends AnswerDetails {
 
     @Override
     public boolean isCorrect() {
-        return getOption() != null && getOption().isCorrect();
+        boolean correct = true;
+        for (int i = 0; i < getOption().size(); i++){
+                correct = correct && getOption().get(i).isCorrect() && getOption().get(i) != null;
+        }   
+        return correct;
     }
 
 
     public void remove() {
         if (option != null) {
-            option.getQuestionAnswers().remove(this);
+            for (int i = 0; i < option.size(); i++){
+                option.get(i).getQuestionAnswers().remove(this);
+            }
             option = null;
         }
     }
@@ -87,7 +97,17 @@ public class MultipleChoiceAnswer extends AnswerDetails {
 
     @Override
     public String getAnswerRepresentation() {
-        return this.getOption() != null ? MultipleChoiceQuestion.convertSequenceToLetter(this.getOption().getSequence()) : "-";
+        String something = "" ;
+
+        for (int i = 0; i < this.getOption().size(); i++){
+            if(this.getOption() != null){
+                something += MultipleChoiceQuestion.convertSequenceToLetter(this.getOption().get(i).getSequence());
+            }
+            else{
+                something += "-";
+            }
+        }
+        return something;
     }
 
     @Override

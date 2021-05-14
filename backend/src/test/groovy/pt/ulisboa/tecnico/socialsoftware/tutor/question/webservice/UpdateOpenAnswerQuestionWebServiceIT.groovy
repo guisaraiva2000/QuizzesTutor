@@ -109,8 +109,8 @@ class UpdateOpenAnswerQuestionWebServiceIT extends SpockTest {
         questionDto.getQuestionDetailsDto().setExpression(OPEN_QUESTION_1_EXPRESSION)
 
         when:
-        response = restClient.post(
-                path: '/courses/' + externalCourseExecution.getId()+ '/questions',
+        response = restClient.put(
+                path: '/questions/' + question.getId(),
                 body: mapper.writeValueAsString(questionDto),
                 requestContentType: 'application/json'
         )
