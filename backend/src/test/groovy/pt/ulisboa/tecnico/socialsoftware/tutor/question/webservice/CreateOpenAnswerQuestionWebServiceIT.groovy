@@ -58,7 +58,7 @@ class CreateOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when:
         response = restClient.post(
-                path: '/courses/' + externalCourse.getId() + '/questions',
+                path: '/questions/courses/' + externalCourse.getId(),
                 body: mapper.writeValueAsString(questionDto),
                 requestContentType: 'application/json'
         )
@@ -92,7 +92,7 @@ class CreateOpenAnswerQuestionWebServiceIT extends SpockTest {
 
         when:
         response = restClient.post(
-                path: '/courses/' + externalCourseExecution.getId()+ '/questions',
+                path: '/questions/courses/' + externalCourseExecution.getId(),
                 body: mapper.writeValueAsString(questionDto),
                 requestContentType: 'application/json'
         )
