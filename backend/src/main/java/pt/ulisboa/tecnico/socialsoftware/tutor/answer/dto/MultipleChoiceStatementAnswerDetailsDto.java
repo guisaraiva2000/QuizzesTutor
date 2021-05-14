@@ -7,26 +7,34 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQue
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswerItem;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import javax.persistence.Transient;
 
 public class MultipleChoiceStatementAnswerDetailsDto extends StatementAnswerDetailsDto {
-    private Integer optionId;
+    private List<Integer> optionId = new ArrayList<>();
 
     public MultipleChoiceStatementAnswerDetailsDto() {
     }
 
     public MultipleChoiceStatementAnswerDetailsDto(MultipleChoiceAnswer questionAnswer) {
         if (questionAnswer.getOption() != null) {
-            this.optionId = questionAnswer.getOption().getId();
+            for (int i = 0; i < questionAnswer.getOption().size(); i++){
+                this.optionId.add(questionAnswer.getOption().get(i).getId());
+            }
         }
     }
 
-    public Integer getOptionId() {
+    public List<Integer> getOptionId() {
         return optionId;
     }
 
-    public void setOptionId(Integer optionId) {
-        this.optionId = optionId;
+    public void setOptionId(List<Integer> optionId) {
+        this.optionId = new ArrayList<>();
+        for (int i = 0; i < optionId.size(); i++){
+                this.optionId.add(optionId.get(i));
+            }
     }
 
     @Transient

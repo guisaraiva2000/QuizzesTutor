@@ -112,7 +112,7 @@ public class AnswersXmlExportVisitor implements Visitor {
         if (answer.getOption() != null) {
             Element optionElement = new Element("option");
             optionElement.setAttribute(QUESTION_KEY, String.valueOf(answer.getQuestionAnswer().getQuestion().getKey()));
-            optionElement.setAttribute(SEQUENCE, String.valueOf(answer.getOption().getSequence()));
+            optionElement.setAttribute(SEQUENCE, String.valueOf(answer.getOption()));
             this.currentElement.addContent(optionElement);
         }
     }

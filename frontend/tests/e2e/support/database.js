@@ -145,6 +145,7 @@ Cypress.Commands.add('cleanOpenAnswerQuestionsByName', questionName => {
                 DELETE FROM questions WHERE id IN (SELECT question_id FROM toDelete);`);
 });
 
+
 Cypress.Commands.add('cleanOpenAnswerQuizByName',  (quizName) => {
   dbCommand(`DELETE FROM answer_details ad  USING question_answers qa WHERE ad.question_answer_id = qa.id;
                       DELETE FROM question_answers qa USING quiz_questions qq WHERE qq.id = qa.quiz_question_id;

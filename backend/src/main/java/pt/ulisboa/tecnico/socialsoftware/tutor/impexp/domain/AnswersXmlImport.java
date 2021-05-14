@@ -282,7 +282,7 @@ public class AnswersXmlImport {
             questionAnswer.setAnswerDetails((AnswerDetails) null);
         } else {
             MultipleChoiceAnswer answer
-                    = new MultipleChoiceAnswer(questionAnswer, optionRepository.findById(optionId).orElse(null));
+                    = new MultipleChoiceAnswer(questionAnswer, optionRepository.findAll());
             questionAnswer.setAnswerDetails(answer);
             answerDetailsRepository.save(answer);
         }

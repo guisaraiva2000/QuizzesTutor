@@ -4,7 +4,9 @@ import MultipleChoiceAnswerDetails from '@/models/management/questions/MultipleC
 import CodeFillInQuestionDetails from '@/models/management/questions/CodeFillInQuestionDetails';
 import CodeFillInAnswerDetails from '@/models/management/questions/CodeFillInAnswerDetails';
 import OpenAnswerQuestionDetails from '@/models/management/questions/OpenAnswerQuestionDetails';
+
 import OpenAnswerAnswerDetails from '@/models/management/questions/OpenAnswerAnswerDetails';
+
 
 import AnswerDetails from '@/models/management/questions/AnswerDetails';
 import StatementQuestionDetails from '@/models/statement/questions/StatementQuestionDetails';
@@ -144,6 +146,7 @@ class OpenAnswerQuestionFactory extends QuestionFactory {
   createQuestionDetails(details: any): QuestionDetails {
     return new OpenAnswerQuestionDetails(details);
   }
+
   createAnswerDetails(details: any): AnswerDetails {
     return new OpenAnswerAnswerDetails(details);
   }
@@ -152,6 +155,7 @@ class OpenAnswerQuestionFactory extends QuestionFactory {
   }
   createStatementAnswerDetails(details: any): StatementAnswerDetails {
     return new OpenAnswerStatementAnswerDetails(details);
+
   }
   createStatementCorrectAnswerDetails(
     details: any
