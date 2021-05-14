@@ -147,6 +147,11 @@ public class CSVQuizExportVisitor implements Visitor {
     }
 
     @Override
+    public void visitAnswerDetails(OpenAnswer answer){
+        line[column++] = answer.getAnswerRepresentation();
+    }
+
+    @Override
     public void visitQuizQuestion(QuizQuestion quizQuestion) {
         quizQuestion.getQuestion().accept(this);
     }

@@ -1,20 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.*;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.CodeFillInAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course;
-import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
+import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
+import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.Assessment;
+import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User;
-import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser;
 
 public interface Visitor {
     default void visitQuestion(Question question) {}
@@ -50,6 +45,8 @@ public interface Visitor {
     default void visitAnswerDetails(CodeFillInAnswer answer){}
 
     default void visitQuestionDetails(CodeFillInQuestion question) {}
+
+    default void visitAnswerDetails(OpenAnswer answer) {}
 
     default void visitQuestionDetails(OpenAnswerQuestion question) {}
 

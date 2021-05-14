@@ -1,29 +1,32 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.webservice
 
-import groovyx.net.http.RESTClient
 import groovyx.net.http.HttpResponseException
+import groovyx.net.http.RESTClient
 import org.apache.http.HttpStatus
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.OpenAnswerQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.MultipleChoiceQuestionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
+class TeacherExportsQuizWebServiceIT extends SpockTest {
     @LocalServerPort
     private int port
 
     def teacher
-    def question
     def student
+    def question
+    def response
+    def quiz
+    def quizQuestion
 
     def setup() {
-
         restClient = new RESTClient("http://localhost:" + port)
 
         createExternalCourseAndExecution()
@@ -42,33 +45,29 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         externalCourseExecution.addUser(student)
         userRepository.save(student)
 
-        def questionDto = new QuestionDto()
-        questionDto.setTitle(QUESTION_1_TITLE)
-        questionDto.setContent(QUESTION_1_CONTENT)
-        questionDto.setStatus(Question.Status.SUBMITTED.name())
+        quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setTitle("Quiz Title")
+        quiz.setType(Quiz.QuizType.PROPOSED.toString())
+        quiz.setCourseExecution(externalCourseExecution)
+        quiz.setAvailableDate(DateHandler.now())
+        quizRepository.save(quiz)
 
-        def optionDto = new OptionDto()
-        optionDto.setContent(OPTION_1_CONTENT)
-        optionDto.setCorrect(true)
-        def options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_1_CONTENT)
-        optionDto.setCorrect(true)
-        options = new ArrayList<OptionDto>()
-        options.add(optionDto)
-
-        questionDto.setQuestionDetailsDto(new MultipleChoiceQuestionDto())
-        questionDto.getQuestionDetailsDto().setOptions(options)
-
-        questionService.createQuestion(externalCourse.getId(), questionDto)
-        question = questionRepository.findAll().get(0)
+        def question = new Question()
+        question.setKey(1)
+        question.setTitle("Question Title")
+        question.setCourse(externalCourse)
+        def questionDetails = new OpenAnswerQuestion()
+        question.setQuestionDetails(questionDetails)
+        questionDetails.setCorrectAnswer(OPEN_QUESTION_1_ANSWER)
+        questionDetailsRepository.save(questionDetails)
+        questionRepository.save(question)
+        quiz.setConclusionDate(DateHandler.now().plusDays(2))
+        quizQuestion = new QuizQuestion(quiz, question, 0)
+        quizQuestionRepository.save(quizQuestion)
     }
 
-/*
-
-    def "teacher exports a multiple choice question"() {
+    def "teacher exports quiz"() {
         given: 'a teacher login'
         createdUserLogin(USER_1_EMAIL, USER_1_PASSWORD)
 
@@ -82,24 +81,22 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
 
         when: "the web service is invoked"
         def map = restClient.get(
-                path: "/courses/" + externalCourseExecution.getId() + "/questions/export",
+                path: "/quizzes/" + quiz.getId() + "/export",
                 requestContentType: "application/json"
         )
 
-        then: "the response status is OK"
-        assert map['response'].status == 200
+        then:
+        assert map['response'] != null
         assert map['reader'] != null
+    }
 
-    }*/
-
-
-    def "student exports a multiple choice question"() {
+    def "student fails to export quiz"() {
         given: 'a student login'
         createdUserLogin(USER_2_EMAIL, USER_2_PASSWORD)
 
         when: "the web service is invoked"
         response = restClient.get(
-                path: "/questions/courses/" + externalCourse.getId() + "/export",
+                path: "/quizzes/" + quiz.getId() + "/export",
                 requestContentType: "application/json"
         )
 
@@ -113,7 +110,8 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
         userRepository.deleteById(student.getId())
         courseExecutionRepository.deleteById(externalCourseExecution.getId())
         courseRepository.deleteById(externalCourse.getId())
+        quizRepository.deleteAll()
+        quizAnswerItemRepository.deleteAll()
     }
 
 }
-

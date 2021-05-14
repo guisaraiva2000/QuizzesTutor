@@ -152,4 +152,13 @@ public class AnswersXmlExportVisitor implements Visitor {
             this.currentElement.addContent(spotContainerElement);
         }
     }
+
+    @Override
+    public void visitAnswerDetails(OpenAnswer answer) {
+        this.currentQuestionAnswer.setAttribute("type", Question.QuestionTypes.OPEN_ANSWER_QUESTION);
+        if (answer.getAnswer() != null) {
+            Element answerElement = new Element("answer");
+            this.currentElement.addContent(answerElement);
+        }
+    }
 }
