@@ -116,4 +116,3 @@ class ExportMultipleChoiceQuestionWebServiceIT extends SpockTest {
     }
 
 }
-
